@@ -213,7 +213,7 @@ class TouchCommand : public BuiltInCommand {
 class SmallShell {
  private:  
   static const std::string DEFAULT_PROMPT;
-  const std::string current_prompt;
+  std::string current_prompt;
   ExternalCommand *fg_cmd = nullptr;
   SmallShell();
 
