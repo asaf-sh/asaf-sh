@@ -97,7 +97,7 @@ class GetCurrDirCommand : public BuiltInCommand {
   GetCurrDirCommand(const char* cmd_line);
   virtual ~GetCurrDirCommand() {}
   void execute() override;
-  static int MAX_PATH_LENGTH;
+  static const int MAX_PATH_LENGTH;
 };
 
 class ShowPidCommand : public BuiltInCommand {
@@ -116,7 +116,8 @@ public:
   void execute() override;
 };
 
-enum class Status {running, stopped, killed, finished}
+enum class Status {running, stopped, killed, finished};
+class JobsList{
 public:
   class JobEntry {
     private:
@@ -211,7 +212,7 @@ class TouchCommand : public BuiltInCommand {
 
 class SmallShell {
  private:  
-  static const std::string DEFAULT_PROMPT = "smash";
+  static const std::string DEFAULT_PROMPT;
   const std::string current_prompt;
   ExternalCommand *fg_cmd = nullptr;
   SmallShell();

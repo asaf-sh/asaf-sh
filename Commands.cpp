@@ -51,9 +51,7 @@ int _parseCommandLine(const char* cmd_line, char** args) {
   int i = 0;
   std::istringstream iss(_trim(string(cmd_line)).c_str());
   for(std::string s; iss >> s; ) {
-    args[
-      
-    ] = (char*)malloc(s.length()+1);
+    args[i] = (char*)malloc(s.length()+1);
     memset(args[i], 0, s.length()+1);
     strcpy(args[i], s.c_str());
     args[++i] = NULL;
@@ -90,14 +88,14 @@ void _removeBackgroundSign(char* cmd_line) {
 // TODO: Add your implementation for classes in Commands.h 
 
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){}
-static int GetCirrDirCommand::MAX_PATH_LENGTH = 1024;
-GetCurrDirCommand::execute(){
+const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
+void GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
-  printf(getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
+  printf("%s",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
 }
 
 bool JobsList::JobEntry::stop(){
-  if(status != Status::running || kill(pid, SIGTSTP) != 0){
+  if(status != Status::running || kill(cmd->getPid(), SIGTSTP) != 0){
     return false;
   }
   else{
@@ -107,7 +105,7 @@ bool JobsList::JobEntry::stop(){
 }
 
 bool JobsList::JobEntry::cont(){
-  if(status != Status::stopped || kill(pid, SIGCONT) != 0){
+  if(status != Status::stopped || kill(cmd->getPid(), SIGCONT) != 0){
     return false;
   }
   else{
@@ -124,14 +122,14 @@ bool JobsList::JobEntry::cont(){
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.pid/
-     << ' ' << job.cmd->getElapsedTime() << " secs";
+    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.cmd->getPid()\
+	    << ' ' << job.cmd->getElapsedTime() << " secs";
     if(job.status == Status::stopped){
-      os << " (stopped)"
+      os << " (stopped)";
     }
     return os;
 }
-
+const std::string SmallShell::DEFAULT_PROMPT = "smash";
 SmallShell::SmallShell(){
 // TODO: add your implementation
   current_prompt = DEFAULT_PROMPT;
