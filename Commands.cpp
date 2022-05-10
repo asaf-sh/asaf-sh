@@ -145,12 +145,12 @@ SmallShell::~SmallShell() {
 * Creates and returns a pointer to Command class which matches the given command line (cmd_line)
 */
 Command * SmallShell::CreateCommand(const char* cmd_line) {
-  if (isPipe(cmd_line)){
+  if (Command::isPipe(cmd_line)){
     return new PipeCommand(cmd_line);
   }
   
   //TADA consider composition of pipe and redirection
-  else if (isRedirection(cmd_line)){
+  else if (Command::isRedirection(cmd_line)){
     return new RedirectionCommand(cmd_line);
   }
 
@@ -183,7 +183,7 @@ Command * SmallShell::CreateCommand(const char* cmd_line) {
     return new TailCommand(cmd_line);
   }
   else if (firstWord.compare("touch") == 0) {
-    return = new TouchCommand(cmd_line);
+    return new TouchCommand(cmd_line);
   }
 
   else {
@@ -212,7 +212,7 @@ void SmallShell::executeInternal(Command* cmd) {
   cmd->execute();
 }
 
-void SmallShell::executeExternal(ExternalCommand* ecmd) {
+void SmallShell::executeExternal(Command* ecmd) {
   
   ecmd->setPid(fork());  
   switch (ecmd->getPid()){
