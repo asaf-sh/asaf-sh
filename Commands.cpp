@@ -22,7 +22,9 @@ using namespace std;
 #define FUNC_ENTRY()
 #define FUNC_EXIT()
 #endif
+#ifndef _POSIX_SOURCE
 #define _POSIX_SOURCE
+#endif
 
 
 const std::string WHITESPACE = " \n\r\t\f\v";
@@ -88,7 +90,7 @@ void _removeBackgroundSign(char* cmd_line) {
 // TODO: Add your implementation for classes in Commands.h 
 
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){}
-
+static int GetCirrDirCommand::MAX_PATH_LENGTH = 1024;
 GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
   printf(getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
@@ -122,10 +124,10 @@ bool JobsList::JobEntry::cont(){
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << '] ' << job.cmd->getCommandLine() <<  ' : ' << job.pid/
-     << ' ' << job.cmd->getElapsedTime() << ' secs';
+    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.pid/
+     << ' ' << job.cmd->getElapsedTime() << " secs";
     if(job.status == Status::stopped){
-      os << ' (stopped)'
+      os << " (stopped)"
     }
     return os;
 }

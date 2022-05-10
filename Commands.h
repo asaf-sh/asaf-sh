@@ -10,6 +10,7 @@
 #define COMMAND_ARGS_MAX_LENGTH (200)
 #define COMMAND_MAX_ARGS (20)
 
+using namespace std;
 class Command {
 // TODO: Add your data members
 private:
@@ -23,18 +24,17 @@ private:
   //virtual void cleanup();
   // TODO: Add your extra methods if needed
 
-  inline static virtual bool isExternal() const = 0;
+  inline static bool isExternal();
 
-  inline char* getCommandLine() const{
+  inline const char* getCommandLine() const{
     return cmd_line;
   }
-  inline static bool isPipe(const char* cmd_line) const{
+  inline static bool isPipe(const char* cmd_line){
     return string(cmd_line).find('|') != string::npos;
   }
 
-  inline static bool isRedirection(const char* cmd_line) const{
-    return string(cmd_line).find('>') != string::npos || /
-    string(cmd_line).find('>>') != string::npos ;
+  inline static bool isRedirection(const char* cmd_line){
+    return string(cmd_line).find('>') != string::npos;
   }
 };
 
@@ -44,7 +44,7 @@ class BuiltInCommand : public Command {
  public:
   BuiltInCommand(const char* cmd_line);
   virtual ~BuiltInCommand() {}
-  inline static virtual bool isExternal() const {return false;}
+  inline static bool isExternal(){return false;}
 };
 
 class ExternalCommand : public Command {
@@ -57,13 +57,12 @@ private:
   ExternalCommand(const char* cmd_line);
   virtual ~ExternalCommand() {}
   void execute() override;
-  inline static virtual bool isExternal() const {return true;}
+  inline static bool isExternal(){return true;}
   inline int getElapsedTime() const{
         return difftime(time(NULL), start_time);
       }
   void inline setPid(pid_t pid) {pid = pid;}
   pid_t inline getPid() const {return pid;}
-  bool inline 
 };
 
 class PipeCommand : public Command {
@@ -72,7 +71,7 @@ class PipeCommand : public Command {
   PipeCommand(const char* cmd_line);
   virtual ~PipeCommand() {}
   void execute() override;
-  inline static virtual bool isExternal() const {return false;}
+  inline static bool isExternal(){return false;}
 };
 
 class RedirectionCommand : public Command {
@@ -81,7 +80,7 @@ class RedirectionCommand : public Command {
   explicit RedirectionCommand(const char* cmd_line);
   virtual ~RedirectionCommand() {}
   void execute() override;
-  inline static virtual bool isExternal() const {return false;}
+  inline static bool isExternal() {return false;}
   //void prepare() override;
   //void cleanup() override;
 };
@@ -98,7 +97,7 @@ class GetCurrDirCommand : public BuiltInCommand {
   GetCurrDirCommand(const char* cmd_line);
   virtual ~GetCurrDirCommand() {}
   void execute() override;
-  static MAX_PATH_LENGTH = 1024;
+  static int MAX_PATH_LENGTH;
 };
 
 class ShowPidCommand : public BuiltInCommand {
@@ -118,9 +117,7 @@ public:
 };
 
 enum class Status {running, stopped, killed, finished}
-
-class JobsList {
- public:
+public:
   class JobEntry {
     private:
       const ExternalCommand* cmd;
@@ -138,14 +135,9 @@ class JobsList {
       bool start();
       //bool start();
       friend ostream& operator<<(ostream& os, const JobEntry& job);
-      }
-  };
+      };
  // TODO: Add your data members
- private:
-    static const int MAX_JOBS = 100;
-    std::unordered_map <int, JobEntry> jobs_list;
 
- public:
   JobsList();
   ~JobsList();
   void addJob(Command* cmd, bool isStopped = false);
@@ -164,6 +156,10 @@ class JobsList {
     // Instantiated on first use.
     return instance;
   }
+private:
+    static const int MAX_JOBS = 100;
+    std::unordered_map <int, JobsList::JobEntry> jobs_list;
+
 };
 
 class JobsCommand : public BuiltInCommand {
