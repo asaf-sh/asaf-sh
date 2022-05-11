@@ -50,8 +50,7 @@ class BuiltInCommand : public Command {
 class ExternalCommand : public Command {
 private:
   const char** args;
-  time_t start_time;
-  pid_t pid;
+
   
  public:
   ExternalCommand(const char* cmd_line);
@@ -122,16 +121,17 @@ class JobsList{
 public:
   class JobEntry {
     private:
-      const ExternalCommand* cmd;
+      const Command* cmd;
       const int job_id;
-      //bool is_stopped;
-      //bool is_finished;
-      //time_t start_time;
+      time_t start_time;
+      pid_t pid;
       Status status;
     public:
-      JobEntry();
+      JobEntry(Command* cmd, int job_id, Status status): cmd(cmd), job_id(job_id), status(running){};
+      JobEntry(const& JobEntry job) = default; 
       ~JobEntry();
       
+      Status getStatus() const;
       bool stop();
       bool cont();
       bool start();
@@ -142,7 +142,7 @@ public:
 
   JobsList();
   ~JobsList();
-  void addJob(Command* cmd, bool isStopped = false);
+  void addJob(Command* cmd);
   void printJobsList();
   void killAllJobs();
   void removeFinishedJobs();
@@ -160,7 +160,7 @@ public:
   }
 private:
     static const int MAX_JOBS = 100;
-    std::unordered_map <int, JobsList::JobEntry> jobs_list;
+    std::vector <JobsList::JobEntry> jobs_list;
 
 };
 

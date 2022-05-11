@@ -95,7 +95,7 @@ void GetCurrDirCommand::execute(){
 }
 
 bool JobsList::JobEntry::stop(){
-  if(status != Status::running || kill(cmd->getPid(), SIGTSTP) != 0){
+  if(status != Status::running || kill(pid, SIGTSTP) != 0){
     return false;
   }
   else{
@@ -105,7 +105,7 @@ bool JobsList::JobEntry::stop(){
 }
 
 bool JobsList::JobEntry::cont(){
-  if(status != Status::stopped || kill(cmd->getPid(), SIGCONT) != 0){
+  if(status != Status::stopped || kill(pid, SIGCONT) != 0){
     return false;
   }
   else{
@@ -144,7 +144,7 @@ SmallShell::~SmallShell() {
 /**
 * Creates and returns a pointer to Command class which matches the given command line (cmd_line)
 */
-Command * SmallShell::CreateCommand(const char* cmd_line) {
+Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   if (Command::isPipe(cmd_line)){
     return new PipeCommand(cmd_line);
   }
@@ -187,6 +187,7 @@ Command * SmallShell::CreateCommand(const char* cmd_line) {
   }
 
   else {
+    *isExternal = true;
     return new ExternalCommand(cmd_line);
   }
   
@@ -194,26 +195,69 @@ Command * SmallShell::CreateCommand(const char* cmd_line) {
 }
 
 void SmallShell::executeCommand(const char *cmd_line) {
-  
-  Command* cmd = CreateCommand(cmd_line);
-  if (cmd->isExternal()){
-    executeExternal(cmd);
+  bool isExternal = false;
+  Command* cmd = CreateCommand(cmd_line, &isExternal);
+  if (isExternal){
+    JobsList::getInstance().addJob(cmd);
+    //executeExternal(cmd);
     // deletion of cmd for fg job inside executeExteranl - consider changing because its FUGLY!
   }
   else{
-    executeInternal(cmd);
+    cmd->execute();
     delete cmd;
   }
+
+void JobsList::addJob(Command* cmd){
+    JobEntry job = JobEntry(cmd, jobs_list.size());
+    jobs_list.push_back(job);
+    job = job_list.back();
+    job.start();
+  };
+
+void JobsList::JobEntry::start(){
+  switch((pid = fork())){
+    case -1:
+      badFork() //TODO - implement
+      break;
+
+    case 0: // in child process
+      setpgrp();
+      cmd->execute();
+    break;
+
+    default: // in main process
+      bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
+      if(isFg){
+        int wstatus;
+        waitpid(pid, *wstatus, 0);
+        if WIFSTOPPED(wstatus){
+         stop();
+        }
+        else{ //assume only get here for terminated or killed child process/command
+          delete cmd;
+        }
+      }
+    break;
+    }
+};
+
+void JobsList::stopJobById(int id){
+  this->getJobById(id).stop();
+};
+
+static void badFork(){
+ return;
+};
   
   // Please note that you must fork smash process for some commands (e.g., external commands....)
-}
 
+/*
 void SmallShell::executeInternal(Command* cmd) {
   cmd->execute();
 }
 
 void SmallShell::executeExternal(Command* ecmd) {
-  
+  JobsList::
   ecmd->setPid(fork());  
   switch (ecmd->getPid()){
   case -1:
@@ -248,7 +292,7 @@ void SmallShell::executeExternal(Command* ecmd) {
     break;
   }
   
-  }
+  }*/
   
   // for example:
   // Command* cmd = CreateCommand(cmd_line);
