@@ -133,7 +133,7 @@ public:
   class JobEntry {
     private:
       Command* cmd;
-      const int job_id;
+      int job_id;
       time_t start_time;
       pid_t pid;
       Status status;
