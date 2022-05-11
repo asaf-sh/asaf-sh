@@ -81,7 +81,7 @@ class RedirectionCommand : public Command {
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
-  std::string old_dir_path = nullptr;
+  //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
   ChangeDirCommand(const char* cmd_line);

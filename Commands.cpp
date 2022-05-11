@@ -205,16 +205,19 @@ void ShowPidCommand::execute(){
 }
 
 void ChangeDirCommand::execute(){
-  if (sizeof(args)/sizeof(args*) > 1):
+  //consider moving to validate or prepare method
+  if (sizeof(args)/sizeof(*args) > 1){
     std::cout << "smash error: cd: too many arguments";
+  }
 
-  else if (args[0].compare("-") == 0:
+  /*else if (args[0].compare("-") == 0){
     if (old_dir_path == nullptr){
       	std::cerr << "smash error: cd: OLDPWD not set";
       }
     else{
     	SmallShel::getInstance()->chdir(old_dir_path);
     }
+  }*/
       
  /* else if args[0].compare("..") == 0:
     char* curr_path = SmallShel->getInstance()->GetCurrDirCommand::execute();
@@ -223,8 +226,8 @@ void ChangeDirCommand::execute(){
     SmallShell::getInstance()->chdir("..");*/
  
   else{
-    getcwd(old_dir_path, 0);
-    SmallShell::getInstance()->chdir(args[0]);
+    //getcwd(old_dir_path, 0);
+    chdir(args[0]);
     }
 }
 
