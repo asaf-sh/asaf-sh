@@ -204,11 +204,22 @@ void ShowPidCommand::execute(){
   std::cout << SmallShell::getInstance().getPid();
 }
 
-void ChangeDirCommand::execute(){
-  //consider moving to validate or prepare method
-  if (sizeof(args)/sizeof(*args) > 1){
-    std::cout << "smash error: cd: too many arguments";
+bool ChangeDirCommand::validate(){
+  if(!validateArgsLen()){
+    std::cerr << "smash error: cd: too many arguments";
   }
+}
+void ChangeDirCommand::execute(){
+  if(!validate()){
+    return;
+  }
+  
+  prepare();
+  
+  //consider moving to validate or prepare method
+  /*if (sizeof(args)/sizeof(*args) > 1){
+    std::cout << "smash error: cd: too many arguments";
+  }*/
 
   /*else if (args[0].compare("-") == 0){
     if (old_dir_path == nullptr){
@@ -225,12 +236,24 @@ void ChangeDirCommand::execute(){
     old_dir_path = strcpy(str)
     SmallShell::getInstance()->chdir("..");*/
  
-  else{
     //getcwd(old_dir_path, 0);
-    chdir(args[0]);
-    }
+  chdir(args[0]);
+  cleanup();
+}
+bool BuiltInCommand::validateArgsLen(){
+  return (sizeof(args)/sizeof(*args)) == args_len;
 }
 
+bool BuiltInCommand::validate(){
+  return true;
+}
+
+void BuiltInCommand::prepare(){
+  validate();
+}
+void BuiltInCommand::cleanup(){
+  return;
+}
 void GetCurrDirCommand::execute(){}
 
 void QuitCommand::execute(){}

@@ -41,10 +41,15 @@ private:
 class BuiltInCommand : public Command {
   private:
   const char** args;
+  int args_len = 0;
  public:
   BuiltInCommand(const char* cmd_line);
   virtual ~BuiltInCommand() {}
   static char** parseLine(const char* cmd_line);
+  bool virtual validateArgsLen();
+  bool virtual validate();
+  void virtual prepare();
+  void virtual cleanup();
 };
 
 class ExternalCommand : public Command {
@@ -81,12 +86,14 @@ class RedirectionCommand : public Command {
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
+    int args_len = 1;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
   ChangeDirCommand(const char* cmd_line);
   virtual ~ChangeDirCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class GetCurrDirCommand : public BuiltInCommand {
@@ -95,6 +102,7 @@ class GetCurrDirCommand : public BuiltInCommand {
   virtual ~GetCurrDirCommand() {}
   void execute() override;
   static const int MAX_PATH_LENGTH;
+  bool validate() override;
 };
 
 class ShowPidCommand : public BuiltInCommand {
@@ -102,6 +110,7 @@ class ShowPidCommand : public BuiltInCommand {
   ShowPidCommand(const char* cmd_line);
   virtual ~ShowPidCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class JobsList;
@@ -111,6 +120,7 @@ public:
   QuitCommand(const char* cmd_line);
   virtual ~QuitCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 enum class Status {running, stopped, killed, finished};
@@ -183,6 +193,7 @@ class JobsCommand : public BuiltInCommand {
   JobsCommand(const char* cmd_line);
   virtual ~JobsCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class KillCommand : public BuiltInCommand {
@@ -191,6 +202,7 @@ class KillCommand : public BuiltInCommand {
   KillCommand(const char* cmd_line);
   virtual ~KillCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class ForegroundCommand : public BuiltInCommand {
