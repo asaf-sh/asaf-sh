@@ -148,13 +148,16 @@ public:
       JobEntry(const JobEntry& job) = default; 
       ~JobEntry();
       
-      Status getStatus() const;
+      inline Status getStatus(){
+        return status;
+      }
       inline int getId() const{
 	      return job_id;
       }
       bool stop();
       bool cont();
       void start();
+      void kill();
       inline void resetStartTime(){
 	      start_time = time(NULL);
       }
@@ -177,11 +180,11 @@ public:
   void printJobsList();
   void killAllJobs();
   void removeFinishedJobs();
-  JobEntry* getJobById(int jobId); //todo
+  JobEntry* getJobById(int jobId);
   void stopJobById(int id);
-  void removeJobById(int jobId);//todo
-  JobEntry* getLastJob(int lastJobId);//todo
-  JobEntry* getLastStoppedJob(int jobId);//todo
+  void removeJobById(int jobId);
+  JobEntry* getLastJob(int lastJobId);
+  JobEntry* getLastStoppedJob(int jobId);
   // TODO: Add extra methods or modify exisitng ones as needed
   static JobsList& getInstance() // make SmallShell singleton
   {

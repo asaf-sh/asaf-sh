@@ -126,6 +126,59 @@ JobsList::JobEntry ~JobEntry(){
   delete cmd;
 }
 
+void JobsList::removeFinishedJobs(){
+    for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+      if (itr->getStatus() == Status::finished){
+        jobs_list.erase(itr);
+      }
+    }
+}
+
+  JobEntry* getLastStoppedJob(int jobId){
+    for (auto itr = jobs_list.end(); itr != jobs_list.begin(); --itr){
+      if (itr->getStatus() == Status::stopped){
+        return itr;
+      }
+    }
+    return; //TODO - ERROR
+  }
+
+void JobsList::removeJobById(int jobId){
+  jobs_list.erase(getJobById(jobId));
+  return;
+}
+
+void JobsList::killAllJobs(){
+  for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+    itr->kill();
+  return;
+}
+
+void JobsList::stopJobById(int jobId){
+  getJobById(jobId)->stop();
+  return;
+}
+
+JobEntry* JobsList::getLastJob(int lastJobId){
+  return *jobs_list.back()
+}
+
+JobEntry* JobsList::getJobById(int jobId){
+  if (getMaxId() < jobId){
+      return; //TODO - ERROR
+  }
+  else{
+    auto itr = jobs_list.begin();
+    while (itr != jobs_list.end()){
+      if (itr->getId()) == jobId){
+        return itr;
+      }
+     ++itr
+    }
+    return; //TODO - ERROR 
+  }
+}
+
 /*bool JobsList::JobEntry::start(){
   cmd->prepare()  //consider putting in execute (but remember they've put it under "public")
   cmd->execute()
