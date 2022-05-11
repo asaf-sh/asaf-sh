@@ -264,8 +264,6 @@ class SmallShell {
   }
   ~SmallShell();  //consider add implementation (for safty)
   void executeCommand(const char* cmd_line);
-  void executeInternal(Command* cmd);
-  void executeExternal(Command* cmd);
   pid_t inline getPid() const{
 	  return getpid();
   }
