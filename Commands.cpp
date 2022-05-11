@@ -440,10 +440,12 @@ int JobsList::getMaxId(){
   return max;
 }
 void JobsList::addJob(Command* cmd){
+    printf("DABA - in add_job , with:%s ! \n", cmd->getCommandLine());
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
-    std::pair<int, JobEntry> p(new_id, job);
     jobs_list.push_back(job);
+    job = jobs_list[new_id];
+    job.start()
   };
 
 void JobsList::JobEntry::start(){
