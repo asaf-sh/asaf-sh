@@ -40,8 +40,9 @@ private:
 
 class BuiltInCommand : public Command {
   private:
-  int args_len = 0;
+  int req_args_len=0;
   protected:
+  int args_len;
   const char** args;
  public:
   BuiltInCommand(const char* cmd_line);
@@ -80,14 +81,21 @@ class RedirectionCommand : public Command {
   explicit RedirectionCommand(const char* cmd_line);
   virtual ~RedirectionCommand() {}
   void execute() override;
-  inline static bool isExternal() {return false;}
   //void prepare() override;
   //void cleanup() override;
 };
 
+class ChangePromptCommand : public BuiltInCommand{
+
+  public:
+  ChangePromptCommand(const char* cmd_line);
+  virtual ~ChangeDirCommand() {}
+  void execute() override;
+}
+
 class ChangeDirCommand : public BuiltInCommand {
   private:
-    int args_len = 1;
+    int req_args_len = 1;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
@@ -239,7 +247,7 @@ class TouchCommand : public BuiltInCommand {
 
 class SmallShell {
  private:  
-  static const std::string DEFAULT_PROMPT;
+  static std::string DEFAULT_PROMPT;
   std::string current_prompt;
   ExternalCommand *fg_cmd = nullptr;
   SmallShell();
@@ -260,6 +268,12 @@ class SmallShell {
   void executeExternal(Command* cmd);
   pid_t inline getPid() const{
 	  return getpid();
+  }
+  void inline setPrompt(char* prompt){
+    current_prompt = prompt;
+  }
+  void inline resetPrompt(){
+    setPrompt(DEFAULT_PROMPT);
   }
 
 

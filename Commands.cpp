@@ -167,6 +167,9 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   if (firstWord.compare("pwd") == 0) {
     return new GetCurrDirCommand(cmd_line);
   }
+  else if (firstWord.compare("chprompt") == 0) {
+    return new ChangePromptCommand(cmd_line);
+  }
   else if (firstWord.compare("showpid") == 0) {
     return new ShowPidCommand(cmd_line);
   }
@@ -200,6 +203,16 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   return nullptr;
 }
 
+
+void ChangePromptCommand::execute(){
+  if(args_len == 1){
+    SmallShell::getInstance().resetPrompt();
+  }
+  else{
+    SmallShell::getInstance().setPrompt(args[1]);
+  }
+  
+}
 void ShowPidCommand::execute(){
   std::cout << SmallShell::getInstance().getPid();
 }
@@ -215,7 +228,7 @@ void ChangeDirCommand::execute(){
   if(!validate()){
     return;
   }
-  
+
   prepare();
   
   //consider moving to validate or prepare method
@@ -243,7 +256,7 @@ void ChangeDirCommand::execute(){
   cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
-  return (sizeof(args)/sizeof(*args)) == args_len;
+  return args_len == req_args_len;
 }
 
 bool BuiltInCommand::validate(){
@@ -256,7 +269,41 @@ void BuiltInCommand::prepare(){
 void BuiltInCommand::cleanup(){
   return;
 }
+
+
 void GetCurrDirCommand::execute(){}
+
+void QuitCommand::execute(){}
+
+void JobsCommand::execute(){}
+
+void KillCommand::execute(){}
+
+void ForegroundCommand::execute(){}
+
+void BackgroundCommand::execute(){}
+
+void TailCommand::execute(){}
+
+void TouchCommand::execute(){}
+
+
+BuiltInCommand::BuiltInCommand(const char* cmd_line){
+  args = parseLine(cmd_line);
+  args_len = sizeof(args)/sizeof(*args);
+}
+
+//ChangePromptCommand::ChangePromptCommand(const char* cmd_line){};
+GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line){};
+QuitCommand::QuitCommand(const char* cmd_line){};
+JobsCommand::JobsCommand(const char* cmd_line){};
+KillCommand::KillCommand(const char* cmd_line){};
+ForegroundCommand::ForegroundCommand(const char* cmd_line){};
+BackgroundCommand::BackgroundCommand(const char* cmd_line){};
+TailCommand::TailCommand(const char* cmd_line){};
+TouchCommand::TouchCommand(const char* cmd_line){};
+ShowPidCommand::ShowPidCommand(const char* cmd_line){};
+ChangeDirCommand::ChangeDirCommand(const char* cmd_line){};
 
 void QuitCommand::execute(){}
 
