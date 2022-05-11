@@ -117,27 +117,35 @@ class JobsList{
 public:
   class JobEntry {
     private:
-      const Command* cmd;
+      Command* cmd;
       const int job_id;
       time_t start_time;
       pid_t pid;
       Status status;
     public:
-      JobEntry(Command* cmd, int job_id, Status status): cmd(cmd), job_id(job_id), status(Status::running){};
+      JobEntry(Command* cmd, int job_id): cmd(cmd), job_id(job_id){};
       JobEntry(const JobEntry& job) = default; 
       ~JobEntry();
       
       Status getStatus() const;
+      inline int getId() const{
+	      return job_id;
+      }
       bool stop();
       bool cont();
-      bool start();
+      void start();
       inline void resetStartTime(){
 	      start_time = time(NULL);
       }
       inline int getElapsedTime() const{
       	return difftime(time(NULL), start_time);
       }
-
+      bool operator ==(const JobEntry& other){
+      		return job_id == other.getId();
+      } 
+      bool operator !=(const JobEntry& other){
+	      return job_id != other.getId();
+      }
       friend ostream& operator<<(ostream& os, const JobEntry& job);
       };
  // TODO: Add your data members
@@ -149,6 +157,7 @@ public:
   void killAllJobs();
   void removeFinishedJobs();
   JobEntry * getJobById(int jobId);
+  void stopJobById(int id);
   void removeJobById(int jobId);
   JobEntry * getLastJob(int* lastJobId);
   JobEntry *getLastStoppedJob(int *jobId);

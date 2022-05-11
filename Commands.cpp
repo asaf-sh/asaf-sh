@@ -87,6 +87,10 @@ void _removeBackgroundSign(char* cmd_line) {
 
 // TODO: Add your implementation for classes in Commands.h 
 
+static void badFork(){
+ return;
+};
+
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){}
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
 void GetCurrDirCommand::execute(){
@@ -221,15 +225,17 @@ int JobsList::getMaxId(){
 void JobsList::addJob(Command* cmd){
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
-    jobs_list[new_id] = job;
-    job = jobs_list[new_id];
-    job.start();
+    std::pair<int, JobEntry> p(new_id, job);
+    jobs_list.insert(p);
+    jobs_list[new_id].start();
   };
 
 void JobsList::JobEntry::start(){
-  switch((pid = fork())){
+	pid_t pid = fork();
+	status = Status::running;
+  switch(pid){
     case -1:
-      badFork() //TODO - implement
+      badFork(); //TODO - implement
       break;
 
     case 0: // in child process
@@ -242,7 +248,7 @@ void JobsList::JobEntry::start(){
       bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
       if(isFg){
         int wstatus;
-        waitpid(pid, *wstatus, 0);
+        waitpid(pid, &wstatus, 0);
         if WIFSTOPPED(wstatus){
          stop();
         }
@@ -255,12 +261,9 @@ void JobsList::JobEntry::start(){
 };
 
 void JobsList::stopJobById(int id){
-  this->getJobById(id).stop();
+  this->getJobById(id)->stop();
 };
 
-static void badFork(){
- return;
-};
   
   // Please note that you must fork smash process for some commands (e.g., external commands....)
 
