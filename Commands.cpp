@@ -120,9 +120,9 @@ bool JobsList::JobEntry::cont(){
   }
 }
 
-JobsList::JobEntry JobEntry(Command* cmd, int job_id){}
+//JobsList::JobEntry(Command* cmd, int job_id){};
 
-JobsList::JobEntry ~JobEntry(){
+JobsList::JobEntry::~JobEntry(){
   delete cmd;
 }
 
@@ -134,49 +134,52 @@ void JobsList::removeFinishedJobs(){
     }
 }
 
-  JobEntry* getLastStoppedJob(int jobId){
-    for (auto itr = jobs_list.end(); itr != jobs_list.begin(); --itr){
-      if (itr->getStatus() == Status::stopped){
-        return itr;
+JobsList::JobEntry* JobsList::getLastStoppedJob(int jobId){
+    int max = -1;
+	for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+      if (itr->getStatus() == Status::stopped && itr->getId() > max){
+        max = itr->getId();
       }
     }
-    return; //TODO - ERROR
+    return getJobById(max);
   }
 
 void JobsList::removeJobById(int jobId){
-  jobs_list.erase(getJobById(jobId));
+	for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+		if(itr->getId() == jobId){
+			jobs_list.erase(itr);
+		}
+	}
   return;
 }
 
 void JobsList::killAllJobs(){
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-    itr->kill();
-  return;
+    itr->killJob();
+}
+return;
 }
 
-void JobsList::stopJobById(int jobId){
+
+
+/*void JobsList::stopJobById(int jobId){
   getJobById(jobId)->stop();
   return;
+}*/
+
+JobsList::JobEntry* JobsList::getLastJob(int lastJobId){
+  return getJobById(getMaxId());
 }
 
-JobEntry* JobsList::getLastJob(int lastJobId){
-  return *jobs_list.back()
-}
-
-JobEntry* JobsList::getJobById(int jobId){
-  if (getMaxId() < jobId){
-      return; //TODO - ERROR
-  }
-  else{
+JobsList::JobEntry* JobsList::getJobById(int job_id){
     auto itr = jobs_list.begin();
     while (itr != jobs_list.end()){
-      if (itr->getId()) == jobId){
-        return itr;
+      if (itr->getId() == job_id){
+        return &(*itr);
       }
-     ++itr
+     ++itr;
     }
-    return; //TODO - ERROR 
-  }
+    return nullptr; //TODO - ERROR 
 }
 
 /*bool JobsList::JobEntry::start(){
@@ -346,6 +349,12 @@ void TailCommand::execute(){}
 
 void TouchCommand::execute(){};
 
+void ExternalCommand::execute(){};
+
+void PipeCommand::execute(){};
+
+void RedirectionCommand::execute(){};
+
 /*char** BuiltInCommand::parseLine(const char* cmd_line){
   _parseCommandLine(cmd_line, args);
   return args_to_ret;
@@ -381,11 +390,15 @@ TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 
-PipeCommand::PipeCommand(char const* cmd_line):Command(cmd_line){};
-RedirectionCommand::RedirectionCommand(char const* cmd_line):Command(cmd_line){};
-ExternalCommand::ExternalCommand(char const* cmd_line) : Command(cmd_line){};
+PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
+RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
+
+ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
+	cmd_line = cmd_line;
+};
+
 //Command::~Command(){};
-JobsList::JobEntry::~JobEntry(){};
+//JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 
 void JobsCommand::execute(){}
@@ -406,8 +419,8 @@ void SmallShell::executeCommand(const char *cmd_line) {
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
-    int new_id = JobsList::getInstance().getMaxId() + 1;
-    JobsList::getInstance().addJob(cmd, new_id);
+//    int new_id = JobsList::getInstance().getMaxId() + 1;
+    JobsList::getInstance().addJob(cmd);
     //executeExternal(cmd);
     // deletion of cmd for fg job inside executeExteranl - consider changing because its FUGLY!
   }

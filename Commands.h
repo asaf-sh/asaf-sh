@@ -18,13 +18,11 @@ private:
   const char* cmd_name;
  public:
   Command(const char* cmd_line);
-  virtual ~Command() = default;
+  virtual ~Command(){};
   virtual void execute() = 0;
   //virtual void prepare();
   //virtual void cleanup();
   // TODO: Add your extra methods if needed
-
-  inline static bool isExternal();
 
   inline const char* getCommandLine() const{
     return cmd_line;
@@ -58,7 +56,7 @@ class BuiltInCommand : public Command {
 class ExternalCommand : public Command {
  public:
   ExternalCommand(const char* cmd_line);
-  virtual ~ExternalCommand()=default;
+  virtual ~ExternalCommand(){};
   void execute() override;
   //void inline setPid(pid_t pid) {pid = pid;}
   //pid_t inline getPid() const {return pid;}
@@ -68,7 +66,7 @@ class PipeCommand : public Command {
  private:
  public:
   PipeCommand(const char* cmd_line);
-  virtual ~PipeCommand()=default;
+  virtual ~PipeCommand(){};
   void execute() override;
 };
 
@@ -76,7 +74,7 @@ class RedirectionCommand : public Command {
  private:
  public:
   explicit RedirectionCommand(const char* cmd_line);
-  virtual ~RedirectionCommand()=default;
+  virtual ~RedirectionCommand(){};
   void execute() override;
   //void prepare() override;
   //void cleanup() override;
@@ -153,7 +151,10 @@ public:
       bool stop();
       bool cont();
       void start();
-      void kill();
+      inline void killJob(){
+	  kill(pid, SIGKILL);
+      }
+
       inline void resetStartTime(){
 	      start_time = time(NULL);
       }
