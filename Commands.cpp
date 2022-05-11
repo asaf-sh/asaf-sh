@@ -95,7 +95,7 @@ Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
 void GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
-  printf("%s",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
+  printf("%s\n",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
 }
 
 bool JobsList::JobEntry::stop(){
@@ -295,12 +295,12 @@ void ChangeDirCommand::execute(){
   
   //consider moving to validate or prepare method
   /*if (sizeof(args)/sizeof(*args) > 1){
-    std::cout << "smash error: cd: too many arguments";
+    std::cerr << "smash error: cd: too many arguments\n";
   }*/
 
   /*else if (args[0].compare("-") == 0){
     if (old_dir_path == nullptr){
-      	std::cerr << "smash error: cd: OLDPWD not set";
+      	std::cerr << "smash error: cd: OLDPWD not set\n";
       }
     else{
     	SmallShel::getInstance()->chdir(old_dir_path);
@@ -419,6 +419,7 @@ void SmallShell::executeCommand(const char *cmd_line) {
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
+	  printf("IS EXTERNAL? ... IS_EXTERNAL!\n");
 //    int new_id = JobsList::getInstance().getMaxId() + 1;
     JobsList::getInstance().addJob(cmd);
     //executeExternal(cmd);
