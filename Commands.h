@@ -172,7 +172,7 @@ public:
   int getMaxId();
 private:
     static const int MAX_JOBS = 100;
-    std::unordered_map <int, JobsList::JobEntry> jobs_list;
+    std::vector <JobsList::JobEntry> jobs_list;
 
 };
 

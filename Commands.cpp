@@ -216,7 +216,7 @@ void SmallShell::executeCommand(const char *cmd_line) {
 int JobsList::getMaxId(){
   int max = 0;
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-    if (itr->first > max){
+    if (itr->getId() > max){
       max = itr->first;
     }
   }
@@ -226,8 +226,7 @@ void JobsList::addJob(Command* cmd){
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
     std::pair<int, JobEntry> p(new_id, job);
-    jobs_list.insert(p);
-    jobs_list[new_id].start();
+    jobs_list.push_back(job);
   };
 
 void JobsList::JobEntry::start(){
