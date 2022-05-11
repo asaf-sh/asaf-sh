@@ -120,6 +120,12 @@ bool JobsList::JobEntry::cont(){
   }
 }
 
+JobsList::JobEntry JobEntry(Command* cmd, int job_id){}
+
+JobsList::JobEntry ~JobEntry(){
+  delete cmd;
+}
+
 /*bool JobsList::JobEntry::start(){
   cmd->prepare()  //consider putting in execute (but remember they've put it under "public")
   cmd->execute()
@@ -347,7 +353,8 @@ void SmallShell::executeCommand(const char *cmd_line) {
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
-    JobsList::getInstance().addJob(cmd);
+    int new_id = JobsList::getInstance().getMaxId() + 1;
+    JobsList::getInstance().addJob(cmd, new_id);
     //executeExternal(cmd);
     // deletion of cmd for fg job inside executeExteranl - consider changing because its FUGLY!
   }

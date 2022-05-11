@@ -177,13 +177,12 @@ public:
   void printJobsList();
   void killAllJobs();
   void removeFinishedJobs();
-  JobEntry * getJobById(int jobId);
+  JobEntry* getJobById(int jobId); //todo
   void stopJobById(int id);
-  void removeJobById(int jobId);
-  JobEntry * getLastJob(int* lastJobId);
-  JobEntry *getLastStoppedJob(int *jobId);
+  void removeJobById(int jobId);//todo
+  JobEntry* getLastJob(int lastJobId);//todo
+  JobEntry* getLastStoppedJob(int jobId);//todo
   // TODO: Add extra methods or modify exisitng ones as needed
-  bool createJob();
   static JobsList& getInstance() // make SmallShell singleton
   {
     static JobsList instance; // Guaranteed to be destroyed.
