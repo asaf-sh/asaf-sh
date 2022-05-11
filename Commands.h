@@ -83,7 +83,8 @@ class ChangeDirCommand : public BuiltInCommand {
   private:
   std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
-  ChangeDirCommand(const char* cmd_line, char** plastPwd);
+  public:
+  ChangeDirCommand(const char* cmd_line);
   virtual ~ChangeDirCommand() {}
   void execute() override;
 };
@@ -244,6 +245,10 @@ class SmallShell {
   void executeCommand(const char* cmd_line);
   void executeInternal(Command* cmd);
   void executeExternal(Command* cmd);
+  pid_t inline getPid() const{
+	  return getpid();
+  }
+
 
   inline std::string getPrompt() const {
     return current_prompt;
