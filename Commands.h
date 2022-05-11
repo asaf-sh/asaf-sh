@@ -103,7 +103,7 @@ class ChangeDirCommand : public BuiltInCommand {
   ChangeDirCommand(const char* cmd_line);
   virtual ~ChangeDirCommand() {}
   void execute() override;
-  //bool validate() override;
+  bool validate() override;
 };
 
 class GetCurrDirCommand : public BuiltInCommand {
