@@ -384,7 +384,7 @@ ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_li
 PipeCommand::PipeCommand(char const* cmd_line):Command(cmd_line){};
 RedirectionCommand::RedirectionCommand(char const* cmd_line):Command(cmd_line){};
 ExternalCommand::ExternalCommand(char const* cmd_line) : Command(cmd_line){};
-Command::~Command(){};
+//Command::~Command(){};
 JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 

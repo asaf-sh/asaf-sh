@@ -56,13 +56,9 @@ class BuiltInCommand : public Command {
 };
 
 class ExternalCommand : public Command {
-private:
-  const char** args;
-
-  
  public:
   ExternalCommand(const char* cmd_line);
-  virtual ~ExternalCommand() {}
+  virtual ~ExternalCommand()=default;
   void execute() override;
   //void inline setPid(pid_t pid) {pid = pid;}
   //pid_t inline getPid() const {return pid;}
@@ -72,7 +68,7 @@ class PipeCommand : public Command {
  private:
  public:
   PipeCommand(const char* cmd_line);
-  virtual ~PipeCommand() {}
+  virtual ~PipeCommand()=default;
   void execute() override;
 };
 
@@ -80,7 +76,7 @@ class RedirectionCommand : public Command {
  private:
  public:
   explicit RedirectionCommand(const char* cmd_line);
-  virtual ~RedirectionCommand() {}
+  virtual ~RedirectionCommand()=default;
   void execute() override;
   //void prepare() override;
   //void cleanup() override;
@@ -103,7 +99,7 @@ class ChangeDirCommand : public BuiltInCommand {
   ChangeDirCommand(const char* cmd_line);
   virtual ~ChangeDirCommand() {}
   void execute() override;
-  //bool validate() override;
+  bool validate() override;
 };
 
 class GetCurrDirCommand : public BuiltInCommand {
