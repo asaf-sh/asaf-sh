@@ -434,6 +434,11 @@ void SmallShell::executeCommand(const char *cmd_line) {
   }
 }
 int JobsList::getMaxId(){
+	printf("in getMaxId");
+	if(jobs_list.empty()){
+		return 1;
+	}
+
   int max = 0;
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
     if (itr->getId() > max){
@@ -445,10 +450,13 @@ int JobsList::getMaxId(){
 void JobsList::addJob(Command* cmd){
     printf("DABA - in add_job , with:%s ! \n", cmd->getCommandLine());
     int new_id = getMaxId() + 1;
+    printf("got new id");
     JobEntry job = JobEntry(cmd, new_id);
+    printf("created new job");
     jobs_list.push_back(job);
-    job = jobs_list[new_id];
-    job.start();
+    printf("pushed new job");
+    jobs_list[new_id].start();
+    printf("started new job");
   };
 
 void JobsList::JobEntry::start(){
