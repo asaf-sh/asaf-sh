@@ -209,11 +209,20 @@ void SmallShell::executeCommand(const char *cmd_line) {
     delete cmd;
   }
 }
-
+int JobsList::getMaxId(){
+  int max = 0;
+  for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+    if (itr->first > max){
+      max = itr->first;
+    }
+  }
+  return max;
+}
 void JobsList::addJob(Command* cmd){
-    JobEntry job = JobEntry(cmd, jobs_list.size());
-    jobs_list.push_back(job);
-    job = job_list.back();
+    int new_id = getMaxId() + 1;
+    JobEntry job = JobEntry(cmd, new_id);
+    jobs_list[new_id] = job;
+    job = jobs_list[new_id];
     job.start();
   };
 
