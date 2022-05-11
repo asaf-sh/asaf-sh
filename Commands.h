@@ -171,8 +171,8 @@ public:
       };
  // TODO: Add your data members
 
-  JobsList();
-  ~JobsList();
+  JobsList(){};
+  ~JobsList(){};
   void addJob(Command* cmd);
   void printJobsList();
   void killAllJobs();
