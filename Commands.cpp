@@ -88,7 +88,7 @@ void _removeBackgroundSign(char* cmd_line) {
 // TODO: Add your implementation for classes in Commands.h 
 
 static void badFork(){
- return;
+ perror("smash error: fork failed");
 };
 
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
@@ -349,7 +349,7 @@ void TailCommand::execute(){}
 
 void TouchCommand::execute(){};
 
-void ExternalCommand::execute(){};
+void ExternalCommand::execute(){printf("in Fucking ExternalCommand::execute() !!!");}
 
 void PipeCommand::execute(){};
 
