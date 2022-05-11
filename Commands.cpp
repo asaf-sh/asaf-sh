@@ -100,6 +100,7 @@ bool JobsList::JobEntry::stop(){
   }
   else{
     status = Status::stopped;
+    //resetStartTime(); - consider setting here instead of in "cont" (based on instruction in WHW1
     return true;
   }
 }
@@ -110,6 +111,7 @@ bool JobsList::JobEntry::cont(){
   }
   else{
     status = Status::running;
+    resetStartTime();  //consider moving to "stop" - based on instructions in WHW1
     return true;
   }
 }
@@ -122,8 +124,8 @@ bool JobsList::JobEntry::cont(){
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.cmd->getPid()\
-	    << ' ' << job.cmd->getElapsedTime() << " secs";
+    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.pid\
+	    << ' ' << job.getElapsedTime() << " secs";
     if(job.status == Status::stopped){
       os << " (stopped)";
     }
@@ -206,6 +208,7 @@ void SmallShell::executeCommand(const char *cmd_line) {
     cmd->execute();
     delete cmd;
   }
+}
 
 void JobsList::addJob(Command* cmd){
     JobEntry job = JobEntry(cmd, jobs_list.size());
@@ -226,6 +229,7 @@ void JobsList::JobEntry::start(){
     break;
 
     default: // in main process
+      resetStartTime();
       bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
       if(isFg){
         int wstatus;

@@ -56,12 +56,8 @@ private:
   ExternalCommand(const char* cmd_line);
   virtual ~ExternalCommand() {}
   void execute() override;
-  inline static bool isExternal(){return true;}
-  inline int getElapsedTime() const{
-        return difftime(time(NULL), start_time);
-      }
-  void inline setPid(pid_t pid) {pid = pid;}
-  pid_t inline getPid() const {return pid;}
+  //void inline setPid(pid_t pid) {pid = pid;}
+  //pid_t inline getPid() const {return pid;}
 };
 
 class PipeCommand : public Command {
@@ -127,15 +123,21 @@ public:
       pid_t pid;
       Status status;
     public:
-      JobEntry(Command* cmd, int job_id, Status status): cmd(cmd), job_id(job_id), status(running){};
-      JobEntry(const& JobEntry job) = default; 
+      JobEntry(Command* cmd, int job_id, Status status): cmd(cmd), job_id(job_id), status(Status::running){};
+      JobEntry(const JobEntry& job) = default; 
       ~JobEntry();
       
       Status getStatus() const;
       bool stop();
       bool cont();
       bool start();
-      //bool start();
+      inline void resetStartTime(){
+	      start_time = time(NULL);
+      }
+      inline int getElapsedTime() const{
+      	return difftime(time(NULL), start_time);
+      }
+
       friend ostream& operator<<(ostream& os, const JobEntry& job);
       };
  // TODO: Add your data members
@@ -219,7 +221,7 @@ class SmallShell {
   SmallShell();
 
  public:
-  Command *CreateCommand(const char* cmd_line);
+  Command *CreateCommand(const char* cmd_line, bool* isExternal);
   SmallShell(SmallShell const&)      = delete; // disable copy ctor
   void operator=(SmallShell const&)  = delete; // disable = operator
   static SmallShell& getInstance() // make SmallShell singleton
