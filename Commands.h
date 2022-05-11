@@ -44,7 +44,7 @@ class BuiltInCommand : public Command {
  public:
   BuiltInCommand(const char* cmd_line);
   virtual ~BuiltInCommand() {}
-  inline static bool isExternal(){return false;}
+  static char** parseLine(const char* cmd_line);
 };
 
 class ExternalCommand : public Command {
@@ -66,7 +66,6 @@ class PipeCommand : public Command {
   PipeCommand(const char* cmd_line);
   virtual ~PipeCommand() {}
   void execute() override;
-  inline static bool isExternal(){return false;}
 };
 
 class RedirectionCommand : public Command {
@@ -81,9 +80,10 @@ class RedirectionCommand : public Command {
 };
 
 class ChangeDirCommand : public BuiltInCommand {
+  private:
+  std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
-public:
-  ChangeDirCommand(const char* cmd_line);
+  ChangeDirCommand(const char* cmd_line, char** plastPwd);
   virtual ~ChangeDirCommand() {}
   void execute() override;
 };

@@ -200,6 +200,48 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   return nullptr;
 }
 
+void ShowPidCommand::execute(){
+  std::cout << SmallShell->getInstance()->getPid();
+}
+
+void ChangeDirCommand::execute(){
+  if sizeof(args)/sizeof(args*) > 1:
+    std::cout << 'smash error: cd: too many arguments';
+
+  else if args[0].compare("-") == 0:
+    if old_dir_path == nullptr:
+      std::cout << 'smash error: cd: OLDPWD not set';
+    else:
+      SmallShel->getInstance()->chdir(old_dir_path);
+      
+  else if args[0].compare("..") == 0:
+    char* curr_path = SmallShel->getInstance()->GetCurrDirCommand::execute();
+    std::string str(curr_path);
+    old_dir_path = strcpy(str)
+    SmallShell->getInstance()->chdir("..");
+ 
+  else:
+    old_dir_path = SmallShel->getInstance()->GetCurrDirCommand::execute();
+    SmallShell->getInstance()->chdir(args[0]);
+}
+
+void GetCurrDirCommand::execute(){}
+
+void QuitCommand::execute(){}
+
+void JobsCommand::execute(){}
+
+void KillCommand::execute(){}
+
+void ForegroundCommand::execute(){}
+
+void BackgroundCommand::execute(){}
+
+void TailCommand::execute(){}
+
+void TouchCommand::execute(){}
+
+
 void SmallShell::executeCommand(const char *cmd_line) {
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
