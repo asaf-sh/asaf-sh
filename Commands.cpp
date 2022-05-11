@@ -217,7 +217,7 @@ int JobsList::getMaxId(){
   int max = 0;
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
     if (itr->getId() > max){
-      max = itr->first;
+      max = itr->getId();
     }
   }
   return max;
