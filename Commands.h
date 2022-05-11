@@ -40,8 +40,9 @@ private:
 
 class BuiltInCommand : public Command {
   private:
-  const char** args;
   int args_len = 0;
+  protected:
+  const char** args;
  public:
   BuiltInCommand(const char* cmd_line);
   virtual ~BuiltInCommand() {}

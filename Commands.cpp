@@ -207,7 +207,9 @@ void ShowPidCommand::execute(){
 bool ChangeDirCommand::validate(){
   if(!validateArgsLen()){
     std::cerr << "smash error: cd: too many arguments";
+    return false;
   }
+  return true;
 }
 void ChangeDirCommand::execute(){
   if(!validate()){
