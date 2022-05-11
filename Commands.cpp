@@ -91,7 +91,7 @@ static void badFork(){
  return;
 };
 
-Command::Command(const char* cmd_line) : cmd_line(cmd_line){}
+Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
 void GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
@@ -135,7 +135,7 @@ ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
     }
     return os;
 }
-const std::string SmallShell::DEFAULT_PROMPT = "smash";
+char* SmallShell::DEFAULT_PROMPT = (char*) "smash";
 SmallShell::SmallShell(){
 // TODO: add your implementation
   current_prompt = DEFAULT_PROMPT;
@@ -271,7 +271,7 @@ void BuiltInCommand::cleanup(){
 }
 
 
-void GetCurrDirCommand::execute(){}
+//void GetCurrDirCommand::execute(){}
 
 void QuitCommand::execute(){}
 
@@ -285,27 +285,49 @@ void BackgroundCommand::execute(){}
 
 void TailCommand::execute(){}
 
-void TouchCommand::execute(){}
+void TouchCommand::execute(){};
 
-
-BuiltInCommand::BuiltInCommand(const char* cmd_line){
-  args = parseLine(cmd_line);
-  args_len = sizeof(args)/sizeof(*args);
+/*char** BuiltInCommand::parseLine(const char* cmd_line){
+  _parseCommandLine(cmd_line, args);
+  return args_to_ret;
+}*/
+int BuiltInCommand::getLen(char** args){
+	int count = 0;
+	for(; args[count] != nullptr; ++count);
+	return count;
+}
+static void initializeArr(char** arr, int len){
+	for(int i=0; i<len; ++i){
+		arr[i] = nullptr;
+	}
 }
 
-//ChangePromptCommand::ChangePromptCommand(const char* cmd_line){};
-GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line){};
-QuitCommand::QuitCommand(const char* cmd_line){};
-JobsCommand::JobsCommand(const char* cmd_line){};
-KillCommand::KillCommand(const char* cmd_line){};
-ForegroundCommand::ForegroundCommand(const char* cmd_line){};
-BackgroundCommand::BackgroundCommand(const char* cmd_line){};
-TailCommand::TailCommand(const char* cmd_line){};
-TouchCommand::TouchCommand(const char* cmd_line){};
-ShowPidCommand::ShowPidCommand(const char* cmd_line){};
-ChangeDirCommand::ChangeDirCommand(const char* cmd_line){};
+BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
+  initializeArr(args, 20);
+  _parseCommandLine(cmd_line, args);
+  args_len = getLen(args);
+  //cmd_line = cmd_line;
+  //cmd_name = args[0];
+};
 
-void QuitCommand::execute(){}
+ChangePromptCommand::ChangePromptCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line): BuiltInCommand(cmd_line){};
+QuitCommand::QuitCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+JobsCommand::JobsCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+KillCommand::KillCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+ForegroundCommand::ForegroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+
+PipeCommand::PipeCommand(char const* cmd_line):Command(cmd_line){};
+RedirectionCommand::RedirectionCommand(char const* cmd_line):Command(cmd_line){};
+ExternalCommand::ExternalCommand(char const* cmd_line) : Command(cmd_line){};
+Command::~Command(){};
+JobsList::JobEntry::~JobEntry(){};
+/*void QuitCommand::execute(){}
 
 void JobsCommand::execute(){}
 
@@ -318,6 +340,7 @@ void BackgroundCommand::execute(){}
 void TailCommand::execute(){}
 
 void TouchCommand::execute(){}
+*/
 
 
 void SmallShell::executeCommand(const char *cmd_line) {

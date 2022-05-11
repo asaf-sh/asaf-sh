@@ -43,11 +43,12 @@ class BuiltInCommand : public Command {
   int req_args_len=0;
   protected:
   int args_len;
-  const char** args;
+  char* args[20];
+  static int getLen(char** args);
  public:
   BuiltInCommand(const char* cmd_line);
-  virtual ~BuiltInCommand() {}
-  static char** parseLine(const char* cmd_line);
+  virtual ~BuiltInCommand(){};
+  //static char** parseLine(const char* cmd_line);
   bool virtual validateArgsLen();
   bool virtual validate();
   void virtual prepare();
@@ -89,9 +90,9 @@ class ChangePromptCommand : public BuiltInCommand{
 
   public:
   ChangePromptCommand(const char* cmd_line);
-  virtual ~ChangeDirCommand() {}
+  virtual ~ChangePromptCommand() {}
   void execute() override;
-}
+};
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
@@ -247,7 +248,7 @@ class TouchCommand : public BuiltInCommand {
 
 class SmallShell {
  private:  
-  static std::string DEFAULT_PROMPT;
+  static char* DEFAULT_PROMPT;
   std::string current_prompt;
   ExternalCommand *fg_cmd = nullptr;
   SmallShell();
