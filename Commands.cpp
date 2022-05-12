@@ -371,11 +371,9 @@ static void initializeArr(char** arr, int len){
 }
 
 BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
-  initializeArr(args, 20);
-  _parseCommandLine(cmd_line, args);
+  initializeArr(args, COMMAND_MAX_ARGS);
+  _parseCommandLine(_removeBackgroundSign(cmd_line), args);
   args_len = getLen(args);
-  //cmd_line = cmd_line;
-  //cmd_name = args[0];
 };
 
 ChangePromptCommand::ChangePromptCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
@@ -394,7 +392,9 @@ PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
 RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
 
 ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
-	cmd_line = cmd_line;
+  initializeArr(args, COMMAND_MAX_ARGS+1);
+  args[0] = BASH;
+  _parseCommandLine(_removeBackgroundSign(cmd_line), &args[1]);
 };
 
 //Command::~Command(){};
@@ -445,7 +445,7 @@ void JobsList::addJob(Command* cmd){
     JobEntry job = JobEntry(cmd, new_id);
     jobs_list.push_back(job);
     job = jobs_list[new_id];
-    job.start()
+    job.start();
   };
 
 void JobsList::JobEntry::start(){
