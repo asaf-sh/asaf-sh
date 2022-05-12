@@ -349,7 +349,10 @@ void TailCommand::execute(){}
 
 void TouchCommand::execute(){};
 
-void ExternalCommand::execute(){printf("in Fucking ExternalCommand::execute() !!!");}
+void ExternalCommand::execute(){
+  printf("in Fucking ExternalCommand::execute() !!!");
+  execv(BASH, args);
+  }
 
 void PipeCommand::execute(){};
 

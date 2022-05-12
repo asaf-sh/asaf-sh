@@ -9,6 +9,7 @@
 
 #define COMMAND_ARGS_MAX_LENGTH (200)
 #define COMMAND_MAX_ARGS (20)
+#define BASH ("/bin/bash")
 
 using namespace std;
 class Command {
@@ -41,7 +42,7 @@ class BuiltInCommand : public Command {
   int req_args_len=0;
   protected:
   int args_len;
-  char* args[20];
+  char* args[COMMAND_MAX_ARGS];
   static int getLen(char** args);
  public:
   BuiltInCommand(const char* cmd_line);
@@ -55,7 +56,7 @@ class BuiltInCommand : public Command {
 
 class ExternalCommand : public Command {
 private:
-    char* args[21];
+    char* args[COMMAND_MAX_ARGS+1];
  public:
   ExternalCommand(const char* cmd_line);
   virtual ~ExternalCommand(){};
