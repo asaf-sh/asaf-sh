@@ -281,7 +281,6 @@ void ShowPidCommand::execute(){
 }
 
 bool ChangeDirCommand::validate(){
-	printf("in CHDIR::validate\twith args_len=%d\treq_args_len = %d\n", args_len, req_args_len);	
   if(!validateArgsLen()){
     std::cerr << "smash error: cd: too many arguments";
     return false;
@@ -352,7 +351,6 @@ void TailCommand::execute(){}
 void TouchCommand::execute(){};
 
 void ExternalCommand::execute(){
-  printf("in Fucking ExternalCommand::execute() !!!\n");
   execv(BASH, args);
   }
 
@@ -428,7 +426,6 @@ void SmallShell::executeCommand(const char *cmd_line) {
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
-	  printf("IS EXTERNAL? ... IS_EXTERNAL!\n");
 //    int new_id = JobsList::getInstance().getMaxId() + 1;
     JobsList::getInstance().addJob(cmd);
     //executeExternal(cmd);
@@ -440,12 +437,9 @@ void SmallShell::executeCommand(const char *cmd_line) {
   }
 }
 int JobsList::getMaxId(){
-  printf("in getMaxId\n");
   if(jobs_list.empty()){
-	  printf("was empty\n");
 	return 0;  
   }
-  printf("jobs_list is not empty.... ?!\n");
 
   int max = 0;
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
@@ -456,18 +450,10 @@ int JobsList::getMaxId(){
   return max;
 }
 void JobsList::addJob(Command* cmd){
-    printf("DABA - in add_job , with:%s ! \n", cmd->getCommandLine());
-    printf("jobs_list is empty? - %d\n", jobs_list.empty());
-    printf("finished printing\n");
-    printf("max id: %d\n", getMaxId());
     int new_id = getMaxId();
-    printf("got new id\n");
     JobEntry job = JobEntry(cmd, new_id);
-    printf("created new job\n");
     jobs_list.push_back(job);
-    printf("pushed new job\n");
     getJobById(new_id)->start();
-    printf("started new job\n");
   };
 
 void JobsList::JobEntry::start(){
