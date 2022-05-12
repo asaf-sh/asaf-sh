@@ -275,11 +275,13 @@ void ChangePromptCommand::execute(){
   }
   
 }
+//pid_t SmallShell::getPid()
 void ShowPidCommand::execute(){
-  std::cout << SmallShell::getInstance().getPid();
+  std::cout << getpid() << endl;
 }
 
 bool ChangeDirCommand::validate(){
+	printf("in CHDIR::validate\twith args_len=%d\treq_args_len = %d\n", args_len, req_args_len);	
   if(!validateArgsLen()){
     std::cerr << "smash error: cd: too many arguments";
     return false;
@@ -375,7 +377,9 @@ static void initializeArr(char** arr, int len){
 
 BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
   initializeArr(args, COMMAND_MAX_ARGS);
-  _parseCommandLine(_removeBackgroundSign(cmd_line), args);
+  char* cmd_line2 = (char*) cmd_line;
+  _removeBackgroundSign(cmd_line2);
+  _parseCommandLine(cmd_line2, args);
   args_len = getLen(args);
 };
 
@@ -397,7 +401,9 @@ RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line)
 ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
   initializeArr(args, COMMAND_MAX_ARGS+1);
   args[0] = BASH;
-  _parseCommandLine(_removeBackgroundSign(cmd_line), &args[1]);
+  char * cmd_line2 = (char*) cmd_line;
+  _removeBackgroundSign(cmd_line2);
+  _parseCommandLine(cmd_line2, &args[1]);
 };
 
 //Command::~Command(){};

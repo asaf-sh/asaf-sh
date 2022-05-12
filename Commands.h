@@ -9,7 +9,7 @@
 
 #define COMMAND_ARGS_MAX_LENGTH (200)
 #define COMMAND_MAX_ARGS (20)
-#define BASH ("/bin/bash")
+#define BASH ((char*) "/bin/bash")
 
 using namespace std;
 class Command {
@@ -93,7 +93,7 @@ class ChangePromptCommand : public BuiltInCommand{
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
-    int req_args_len = 1;
+    int req_args_len = 2;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
@@ -110,6 +110,7 @@ class GetCurrDirCommand : public BuiltInCommand {
   void execute() override;
   static const int MAX_PATH_LENGTH;
   //bool validate() override;
+  static pid_t getPwd();
 };
 
 class ShowPidCommand : public BuiltInCommand {
@@ -267,9 +268,9 @@ class SmallShell {
   }
   ~SmallShell();  //consider add implementation (for safty)
   void executeCommand(const char* cmd_line);
-  pid_t inline getPid() const{
+  /*pid_t inline getPid() const{
 	  return getpid();
-  }
+  }*/
   void inline setPrompt(char* prompt){
     current_prompt = prompt;
   }
