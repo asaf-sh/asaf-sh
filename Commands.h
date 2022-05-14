@@ -6,6 +6,7 @@
 #include <string>
 #include <time.h>
 #include <signal.h>
+#include <unistd.h>
 
 #define COMMAND_MAX_LENGTH (80)
 #define COMMAND_ARGS_MAX_LENGTH (200)

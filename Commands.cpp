@@ -130,7 +130,9 @@ bool JobsList::JobEntry::cont(){
 //JobsList::JobEntry(Command* cmd, int job_id){};
 
 JobsList::JobEntry::~JobEntry(){
-  delete cmd;
+  if(cmd != nullptr){
+	  delete cmd;
+  }
 }
 
 void JobsList::removeFinishedJobs(){
@@ -362,9 +364,13 @@ void TouchCommand::execute(){};
 
 void ExternalCommand::execute(){
   printf("in External::execute\n");
-  char* execv_arr[] = {BASH, (char*) "-c", fg_cmd_line};
-
-  execv(BASH, execv_arr);
+  /*char* execv_arr[] = {BASH, (char*) "-c", fg_cmd_line};
+  for(int i=0; i<3;++i){
+	  cout << execv_arr[i] << " ";
+  }
+  cout << endl;*/
+  sleep(2);
+  execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
   }
 
 void PipeCommand::execute(){};
@@ -466,11 +472,15 @@ void JobsList::addJob(Command* cmd){
     int new_id = getMaxId();
     JobEntry job = JobEntry(cmd, new_id);
     jobs_list.push_back(job);
+    JobEntry* job2 = getJobById(new_id);
+    cout << "starting job\t:" << *job2 << endl;
+//    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
   };
 
 void JobsList::JobEntry::start(){
 	pid_t pid = fork();
+	resetStartTime();
 	status = Status::running;
   switch(pid){
     case -1:
@@ -479,16 +489,24 @@ void JobsList::JobEntry::start(){
 
     case 0: // in child process
       setpgrp();
+      cout << *this << endl;
       cmd->execute();
+      //this code is never reached, because cmd->execute calls exec
+      status = Status::finished;
+      printf("finished execution in child proccess\n");
+      cout << *this << endl;
     break;
 
     default: // in main process
-      resetStartTime();
+    	sleep(1);
+    	printf("in parent proccess after child started\n");
       bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
       if(isFg){
+	cout << *this << " is fg" << endl;
         int wstatus;
         waitpid(pid, &wstatus, 0);
-        if WIFSTOPPED(wstatus){
+	printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
+        if (WIFSTOPPED(wstatus)){
          stop();
         }
         else{ //assume only get here for terminated or killed child process/command
