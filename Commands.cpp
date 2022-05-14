@@ -344,7 +344,7 @@ void ChangeDirCommand::execute(){
             std::string old_path_trim = old_path.substr(0, idx);
             new_path = strcpy(new char [old_path_trim.length() + 1], old_path_trim.c_str());
             //new_path = old_path_trim.c_str();
-            old_path_stack.push_back(new_path);
+            path_stack.push_back(new_path);
         }
     else {
         new_path = args[1];
