@@ -258,7 +258,7 @@ class BackgroundCommand : public BuiltInCommand {
 
 class TailCommand : public BuiltInCommand {
 private:
-    int N;
+    singed int N;
  public:
   TailCommand(const char* cmd_line);
   void setNumOfRows(int num);
