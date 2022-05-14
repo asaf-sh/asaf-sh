@@ -485,7 +485,7 @@ static void initializeArr(char** arr, int len){
 	}
 }
 
-static bool is_number(std::string& s){
+static bool isNumber(std::string& s){
     int string_size = s.length();
     for (int i = 0; i < string_size; ++i) {
         if (!isdigit(s[i])) {
@@ -512,8 +512,8 @@ bool TailCommand::validate() {
     std::string to_validate = args[1];
 
     if (!validateArgsLen() || args_len != 3 ||\
-        (args_len == 3 && strcmp(to_validate[0],"-") != 0) ||\
-        isnumber(to_validate.substr(1))) {
+        (args_len == 3 && to_validate.find_first_of("-") != 0) ||\
+        isNumber(to_validate.substr(1))) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
