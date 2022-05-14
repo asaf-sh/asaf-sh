@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
+#include <format>
 #include <vector>
 #include <sstream>
 #include <sys/wait.h>
@@ -317,6 +318,39 @@ void ShowPidCommand::execute(){
   std::cout << getpid() << endl;
 }
 
+void ForegroundCommand::execute(){
+  validate();
+  JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
+  if(job == nullptr){
+    perror(format("smash error: fg: jobs-id %d does not exist", req_id));
+  }
+  job->jobWait();
+}
+
+static bool isNumber(const string& str)
+{
+    return str.find_first_not_of("0123456789") == string::npos;
+}
+
+bool ForegroundCommand::validate(){
+  if (args_len == 1){
+    req_id = JobsList::getMaxId();
+    if (req_id == 0){
+      perror("smash error: fg: jobs list is empty");
+      return false
+    }
+    return true;
+  }
+  else if (args_len == 2 && isNumber(args[1])){
+      req_id = stoi(args[1]);
+      return true;
+    }
+
+  else{
+    perror("smash error: fg: invalid arguments")
+    return false;
+  }
+}
 bool ChangeDirCommand::validate(){
   if(!validateArgsLen()){
     std::cerr << "smash error: cd: too many arguments \n";
@@ -595,7 +629,21 @@ void JobsList::addJob(Command* cmd){
     getJobById(new_id)->start();
   //  printf("finished starting job\n");
   };
+void JobsList::JobEntry::jobWait(){
+  status = Status::running;
+  int wstatus;
+  waitpid(pid, &wstatus, 0);
+  if(WIFEXITED(wstatus)){
+	  status = Status::finished;
+	}
 
+	else if (WIFSTOPPED(wstatus)){
+    stop();
+  }
+  else{
+    ;
+  };
+}
 void JobsList::JobEntry::start(){
 	pid = fork();
 	resetStartTime();
@@ -625,23 +673,8 @@ void JobsList::JobEntry::start(){
     	//printf("in parent proccess after child started\n");
       bool is_fg = !_isBackgroundComamnd(cmd_line);
       if(is_fg){
+        jobWait();
 	//cout << *this << " is fg" << endl;
-        int wstatus;
-        waitpid(pid, &wstatus, 0);
-	//printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
-        if(WIFEXITED(wstatus)){
-	status = Status::finished;
-	}
-
-	else if (WIFSTOPPED(wstatus)){
-         stop();
-        }
-        else{ //assume only get here for terminated or killed child process/command
-          /*cout << "deleting cmd" << endl;
-		delete cmd;
-		*///cout << "assuming job was terminated correctly" << endl;
-
-        }
       }
     break;
     }
