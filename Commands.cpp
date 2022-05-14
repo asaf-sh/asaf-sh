@@ -686,7 +686,8 @@ void RedirectionCommand::execute() {
     else {
         freopen(output_file, "w", std::stdout);
     }
-    SmallShell::getInstance().executeCommand(command.c_str);
+    const char* cmd_format = command.c_str;
+    SmallShell::getInstance().executeCommand(cmd_format);
     //freopen(std::cout, "w", output_file);
 }
 
