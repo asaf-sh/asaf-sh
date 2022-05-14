@@ -390,7 +390,38 @@ void BackgroundCommand::execute(){}
 
 void TailCommand::execute(){}
 
-void TouchCommand::execute(){};
+void TouchCommand::execute(){
+    if (!validate()) {
+        return;
+    }
+    char* file_name = args[1];
+    std::string raw_format_time = args[2];
+    struct tm* time;
+    std::string* time_stamp[6];
+    int i = 0;
+    while (raw_format_time.length()){
+        int idx = raw_format_time.find_first_of(":");
+        if (idx == std::string::npos){
+            time_stamp[i] = raw_format_time;
+            break;
+        time_stamp[i] = raw_format_time.substr(0, idx);
+        raw_format_time = raw_format_time.substr(idx);
+        tm->tm_sec = std::stoi(time_stamp[0]);
+        tm->tm_min = std::stoi(time_stamp[1]);
+        tm->tm_hour = std::stoi(time_stamp[2]);
+        tm->tm_mday = std::stoi(time_stamp[3]);
+        tm->tm_mon = std::stoi(time_stamp[4]);
+        tm->tm_year = std::stoi(time_stamp[5]);
+        time_t time_stamp_final = mktime(&tm);
+        utime(file_name, time_stamp_final)
+}
+
+bool TouchCommand::validate() {
+    if (!validateArgsLen()) {
+        std::cerr << "smash error: touch: invalid arguments \n";
+        return false;
+    }
+    return true;
 
 void ExternalCommand::execute(){
   //printf("in External::execute\n");
@@ -438,7 +469,9 @@ KillCommand::KillCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ForegroundCommand::ForegroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
-TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){
+    setReqArgsLen(3);
+};
 ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line) {
     setReqArgsLen(2);
