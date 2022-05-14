@@ -130,7 +130,7 @@ bool JobsList::JobEntry::cont(){
 //JobsList::JobEntry(Command* cmd, int job_id){};
 
 JobsList::JobEntry::~JobEntry(){
-	printf("in JE destructor, with pid=%d\n", getpid());
+	//printf("in JE destructor, with pid=%d\n", getpid());
 }
 
 void JobsList::removeFinishedJobs(){
@@ -174,12 +174,12 @@ return;
   return;
 }*/
 
-JobsList::JobEntry(const JobEntry& job){
-  job_id = job.is_id;
+JobsList::JobEntry::JobEntry(const JobEntry &job){
+  job_id = job.job_id;
   start_time = job.start_time;
   status = job.status;
   pid = job.pid;
-  strcpy(fg_cmd_line, job.fg_cmd_line);
+  strcpy(cmd_line, job.cmd_line);
 }
 JobsList::JobEntry* JobsList::getLastJob(int lastJobId){
   return getJobById(getMaxId());
@@ -204,7 +204,7 @@ JobsList::JobEntry* JobsList::getJobById(int job_id){
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.pid\
+    os << '[' << job.job_id << "] " << job.cmd_line <<  " : "  << job.pid\
 	    << ' ' << job.getElapsedTime() << " secs";
     if(job.status == Status::stopped){
       os << " (stopped)";
@@ -368,7 +368,7 @@ void TailCommand::execute(){}
 void TouchCommand::execute(){};
 
 void ExternalCommand::execute(){
-  printf("in External::execute\n");
+  //printf("in External::execute\n");
   /*char* execv_arr[] = {BASH, (char*) "-c", fg_cmd_line};
   for(int i=0; i<3;++i){
 	  cout << execv_arr[i] << " ";
@@ -452,13 +452,17 @@ void SmallShell::executeCommand(const char *cmd_line) {
   if (isExternal){
 //    int new_id = JobsList::getInstance().getMaxId() + 1;
     JobsList::getInstance().addJob(cmd);
-    printf("finished add job:%s\n",cmd_line);
+   // printf("finished add job:%s\n",cmd_line);
   }
   else{
     cmd->execute();
     delete cmd;
   }
 }
+bool JobsList::JobEntry::isFg(){
+        return !_isBackgroundComamnd(cmd_line);
+      }
+
 int JobsList::getMaxId(){
   if(jobs_list.empty()){
 	return 0;  
@@ -472,17 +476,26 @@ int JobsList::getMaxId(){
   }
   return max;
 }
+
+void JobsList::printJobs(){
+	cout << "jobs list: \t";
+	for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+		cout << *itr << "\t";
+	}
+	cout << endl;
+}
 void JobsList::addJob(Command* cmd){
+	//printJobs();
     cleanup();
-    int new_id = getMaxId();
+    int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
     delete cmd;
     jobs_list.push_back(job);
     JobEntry* job2 = getJobById(new_id);
-    cout << "starting job\t:" << *job2 << endl;
+//    cout << "starting job\t:" << *job2 << endl;
 //    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
-    printf("finished starting job\n");
+  //  printf("finished starting job\n");
   };
 
 void JobsList::JobEntry::start(){
@@ -496,32 +509,35 @@ void JobsList::JobEntry::start(){
 
     case 0: // in child process
       setpgrp();
-      printf("current process's pid = %d\n",getpid());
-      cout << *this << endl;
+      //printf("current process's pid = %d\n",getpid());
+      //cout << *this << endl;
+      char fg_cmd_line[COMMAND_MAX_LENGTH];
+      strcpy(fg_cmd_line, cmd_line);
+      _removeBackgroundSign(fg_cmd_line);
       execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
       //cmd->execute();
       //this code is never reached, because cmd->execute calls exec
       status = Status::finished;
-      printf("finished execution in child proccess\n");
-      cout << *this << endl;
+      //printf("finished execution in child proccess\n");
+      //cout << *this << endl;
     break;
 
     default: // in main process
-    	sleep(1);
-    	printf("in parent proccess after child started\n");
+    	//sleep(1);
+    	//printf("in parent proccess after child started\n");
       bool is_fg = !_isBackgroundComamnd(cmd_line);
       if(is_fg){
-	cout << *this << " is fg" << endl;
+	//cout << *this << " is fg" << endl;
         int wstatus;
         waitpid(pid, &wstatus, 0);
-	printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
+	//printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
         if (WIFSTOPPED(wstatus)){
          stop();
         }
         else{ //assume only get here for terminated or killed child process/command
           /*cout << "deleting cmd" << endl;
 		delete cmd;
-		*/cout << "assuming job was terminated correctly" << endl;
+		*///cout << "assuming job was terminated correctly" << endl;
 
         }
       }

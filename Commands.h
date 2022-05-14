@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <string.h>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
@@ -64,7 +65,9 @@ private:
     char* args[COMMAND_MAX_ARGS+1];
  public:
   ExternalCommand(const char* cmd_line);
-  virtual ~ExternalCommand(){printf("in EC dtor\n");};
+  virtual ~ExternalCommand(){
+	  //printf("in EC dtor\n");
+  };
   void execute() override;
   //void inline setPid(pid_t pid) {pid = pid;}
   //pid_t inline getPid() const {return pid;}
@@ -148,16 +151,14 @@ public:
       Status status;
       //bool is_fg
     public:
-      JobEntry(Command* cmd, int job_id): cmd(cmd), job_id(job_id){
+      JobEntry(Command* cmd, int job_id):job_id(job_id){
         //is_fg = !_isBackgroundComamnd(cmd->getCommandLine());
-        strcpy(cmd_line, cmd->getCommandLine());
+	strcpy(cmd_line, cmd->getCommandLine());
         //_removeBackgroundSign(fg_cmd_line);
       };
-      JobEntry(const JobEntry& job); 
+      JobEntry(const JobsList::JobEntry &job); 
       ~JobEntry();
-      inline isFg() const {
-        return is_fg;
-      }
+      bool isFg();
       inline Status getStatus(){
         return status;
       }
@@ -207,6 +208,7 @@ public:
   }
   int getMaxId();
   void cleanup(){};
+  void printJobs();
 private:
     static const int MAX_JOBS = 100;
     std::vector <JobsList::JobEntry> jobs_list;
