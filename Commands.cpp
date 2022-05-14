@@ -428,11 +428,9 @@ void JobsCommand::execute(){
 
 void KillCommand::execute(){}
 
-void ForegroundCommand::execute(){}
-
 void BackgroundCommand::execute(){}
 
-static bool isNumber(const std::string& s)
+/*static bool isNumber(const std::string& s)
 {
     int string_size = s.length();
     for (int i = 0; i < string_size; ++i)
@@ -443,7 +441,7 @@ static bool isNumber(const std::string& s)
         }
     }
     return true;
-}
+}*/
 
 bool TailCommand::validate()
 {
