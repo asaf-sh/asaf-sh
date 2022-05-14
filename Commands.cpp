@@ -348,8 +348,8 @@ void ChangeDirCommand::execute(){
   cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
-    std::cout << args_len "\n";
-    std::cout << req_args_len "\n";
+    std::cout << args_len << "\n";
+    std::cout << req_args_len << "\n";
   return args_len == req_args_len;
 }
 
