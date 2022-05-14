@@ -8,6 +8,7 @@
 #include "Commands.h"
 #include <time.h>
 #include <utime.h>
+#include <wordwexp.h>
 
 
 using namespace std;
