@@ -340,7 +340,7 @@ void ChangeDirCommand::execute(){
 
     else if (path.compare("..") == 0) {
             int idx = old_path.find_last_of("/");
-            strcpy(new_path*, old_path.substr(0, idx));
+            strcpy(*new_path, old_path.substr(0, idx));
             old_path_stack.push_back(new_path);
         }
     else {
