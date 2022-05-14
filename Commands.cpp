@@ -318,8 +318,16 @@ bool ChangeDirCommand::validate(){
   }
   return true;
 }
+void printPaths(){
+	SmallShell &smash = SmallShell::getInstance();
+	for (auto itr = smash.old_path_stack.begin(); itr != smash.old_path_stack.end(); ++itr){
+		cout << *itr << endl;
+	}
+	cout << endl;
+}
 void ChangeDirCommand::execute(){
-    if (!validate()) {
+//    printPaths();
+	if (!validate()) {
         return;
     }
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
@@ -328,21 +336,24 @@ void ChangeDirCommand::execute(){
     std::string path = args[1];
     std::string old_path = curr_path;
 
-    char* new_path;
+    char new_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     if (path.compare("-") == 0) {
+	    //printf("paths_size = %d\n",SmallShell::getInstance().old_path_stack.size());
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
-            new_path = SmallShell::getInstance().old_path_stack.back();
+            strcpy(new_path,SmallShell::getInstance().old_path_stack.back().c_str());
             //std::cout << SmallShell::getInstance().old_path_stack.size() << "\n";
             SmallShell::getInstance().old_path_stack.pop_back();
         }
         else {
             return; // TOTO - perror implement
         }
+	//printPaths();
     }
     else {
-        new_path = args[1];
+        strcpy(new_path, args[1]);
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
-        std::cout << SmallShell::getInstance().old_path_stack[0] << "\n";
+        //std::cout << SmallShell::getInstance().old_path_stack[0] << "\n";
+	//printPaths();
     }
   //prepare();
   if (chdir(new_path) == -1) {
