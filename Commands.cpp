@@ -511,10 +511,19 @@ void TailCommand::setNumOfRows(int num) {
 bool TailCommand::validate() {
     std::string to_validate = args[1];
     std::string validate_if_num = to_validate.substr(1);
-    if (!validateArgsLen() || args_len != 3 ||\
-        (args_len == 3 && to_validate.find_first_of("-") != 0) ||\
-        isNumber(validate_if_num)) {
-        std::cerr << "smash error: touch: invalid arguments \n";
+    if (!validateArgsLen() || args_len != 3) {
+        std::cout << "1st if failed \n";
+        std::cerr << "smash error: tail: invalid arguments \n";
+        return false;
+    }
+    if ((args_len == 3 && to_validate.find_first_of("-") != 0)) {
+        std::cout << "2nd if failed \n";
+        std::cerr << "smash error: tail: invalid arguments \n";
+        return false;
+    }
+    if(!isNumber(validate_if_num)) {
+        std::cout << "3rd if failed \n";
+        std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
     return true;
