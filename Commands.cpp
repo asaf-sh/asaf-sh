@@ -511,8 +511,7 @@ void TailCommand::setNumOfRows(int num) {
 bool TailCommand::validate() {
     std::string to_validate = args[1];
     std::string validate_if_num = to_validate.substr(1);
-    if (!validateArgsLen() || args_len != 3) {
-        std::cout << "1st if failed \n";
+    if (!validateArgsLen() && args_len != 3) {
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
