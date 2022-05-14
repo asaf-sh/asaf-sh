@@ -50,6 +50,7 @@ class BuiltInCommand : public Command {
   int args_len;
   char* args[COMMAND_MAX_ARGS];
   static int getLen(char** args);
+  void setReqArgsLen(int len);
  public:
   BuiltInCommand(const char* cmd_line);
   virtual ~BuiltInCommand(){};
@@ -101,7 +102,6 @@ class ChangePromptCommand : public BuiltInCommand{
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
-    int req_args_len = 2;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
