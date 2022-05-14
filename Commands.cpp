@@ -323,8 +323,8 @@ void ChangeDirCommand::execute(){
   }
   //prepare();
   wordexp_t we;
-  if (args[1].compare("-") == 0) {
-      wordexp(args[1], &we, WRDE_NOCMD)
+  if (std::string(args[1]).compare("-") == 0) {
+      wordexp(args[1], &we, 0)
   }
   else {
       we = args [1]
