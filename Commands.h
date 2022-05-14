@@ -164,6 +164,9 @@ public:
       inline int getId() const{
 	      return job_id;
       }
+      inline pid_t getPid() const{
+        return pid;
+      }
       bool stop();
       bool cont();
       void start();

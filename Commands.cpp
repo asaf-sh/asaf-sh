@@ -322,8 +322,29 @@ void ChangePromptCommand::execute(){
 void ShowPidCommand::execute(){
   std::cout << getpid() << endl;
 }
+void KillCommand::validate(){
+  return args_len == 3 && args[1].at(0) == '-' && isNumber(args[1].substr(1)) && isNumber(args[2])
+}
+void KillCommand::execute(){
+  if (!validate()){
+    cerr << "smash error: kill: invalid arguments";
+  }
 
-
+  else{
+    int req_sig = stoi(args[1]);
+    int req_id = soti(args[2]);
+    JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
+    if(job == nullptr){
+      cerr << "smash error: kill: job-id " << req_id << " does not exist" << endl;
+    }
+    else{
+      if(kill(job->getPid(), req_sig) == -1){
+        perror("smash error: kill failed");
+      }
+    }
+  }
+  
+}
 
 void BackgroundCommand::execute(){
   JobsList::JobEntry* job;
