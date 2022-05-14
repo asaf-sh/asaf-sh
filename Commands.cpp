@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
-#include <format>
 #include <vector>
 #include <sstream>
 #include <sys/wait.h>
@@ -322,7 +321,7 @@ void ForegroundCommand::execute(){
   validate();
   JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
   if(job == nullptr){
-    perror(format("smash error: fg: jobs-id %d does not exist", req_id));
+    cerr << "smash error: fg: jobs-id " << req_id << " does not exist" << endl;
   }
   job->jobWait();
 }
@@ -336,7 +335,7 @@ bool ForegroundCommand::validate(){
   if (args_len == 1){
     req_id = JobsList::getMaxId();
     if (req_id == 0){
-      perror("smash error: fg: jobs list is empty");
+      cerr << "smash error: fg: jobs list is empty" << endl;
       return false
     }
     return true;
@@ -347,7 +346,7 @@ bool ForegroundCommand::validate(){
     }
 
   else{
-    perror("smash error: fg: invalid arguments")
+    cerr << "smash error: fg: invalid arguments" << endl;
     return false;
   }
 }
