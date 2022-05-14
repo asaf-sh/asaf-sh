@@ -45,9 +45,8 @@ class Command {
 };
 
 class BuiltInCommand : public Command {
-  private:
-  int req_args_len=0;
   protected:
+  int req_args_len;
   int args_len;
   char* args[COMMAND_MAX_ARGS];
   static int getLen(char** args);
