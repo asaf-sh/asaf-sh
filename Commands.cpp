@@ -316,7 +316,7 @@ void ChangeDirCommand::execute(){
   //prepare();
   wordexp_t we;
   wordexp(args[1], &we, 0);
-  if (chdir(we) == -1) {
+  if (chdir(we.we_wordv[0]) == -1) {
       return; // TOTO - perrror implementation
   };
   //cleanup();
