@@ -332,11 +332,11 @@ void ChangeDirCommand::execute(){
     char* new_path;
     if (path.compare("-") == 0) {
         std::cout << 1 << "\n";
-        if (path_stack.size() > 0) {
+        if (SmallShell::getInstance().old_path_stack.size() > 0) {
             std::cout << 2 << "\n";
             new_path = path_stack.back();
             std::cout << new_path << "\n";
-            path_stack.pop_back();
+            SmallShell::getInstance().old_path_stack.pop_back();
         }
         else {
             return; // TOTO - perror implement
@@ -346,13 +346,11 @@ void ChangeDirCommand::execute(){
             int idx = old_path.find_last_of("/");
             std::string old_path_trim = old_path.substr(0, idx);
             new_path = strcpy(new char [old_path_trim.length() + 1], old_path_trim.c_str());
-            //new_path = old_path_trim.c_str();
             SmallShell::getInstance().old_path_stack.push_back(curr_path);
         }
     else {
         new_path = args[1];
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
-        std::cout << SmallShell::getInstance().old_path_stack.size() << "\n";
         std::cout << curr_path << "\n";
     }
   //prepare();
