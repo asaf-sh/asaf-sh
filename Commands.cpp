@@ -528,9 +528,9 @@ void RedirectionCommand::execute() {
     if (strcpy(args[2], ">>" == 0)) {
         mode = "a";
     }
-    freopen(output_file, "w", std::stdout);
+    freopen(output_file, "w", std::cout);
     SmallShell::getInstance().executeCommand(args[1]);
-    freopen(std::stdout, "w", output_file);
+    freopen(std::cout, "w", output_file);
 }
 
 int BuiltInCommand::getLen(char** args){
