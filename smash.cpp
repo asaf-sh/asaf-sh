@@ -20,8 +20,9 @@ int main(int argc, char* argv[]) {
         std::cout << smash.getPrompt() << "> ";
         std::string cmd_line;
         std::getline(std::cin, cmd_line);
-        smash.executeCommand(cmd_line.c_str());
-        //printf("finished the cycle for (%s)\n", cmd_line.c_str());
+	if(cmd_line.compare("") != 0){
+	        smash.executeCommand(cmd_line.c_str());
+	}
     }
     return 0;
 }
