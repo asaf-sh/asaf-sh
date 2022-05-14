@@ -533,7 +533,7 @@ void RedirectionCommand::execute() {
         freopen(output_file, "w", std::stdout);
     }
     SmallShell::getInstance().executeCommand(command.c_str);
-    freopen(std::cout, "w", output_file);
+    //freopen(std::cout, "w", output_file);
 }
 
 int BuiltInCommand::getLen(char** args){
