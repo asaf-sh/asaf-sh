@@ -264,7 +264,8 @@ private:
   TailCommand(const char* cmd_line);
   virtual ~TailCommand() {}
   void execute() override;
-  inline void setNumOfRows(int num) {N = num};
+  bool validate() override;
+  inline void setNumOfRows(int num) { N = num; };
 };
 
 class TouchCommand : public BuiltInCommand {
