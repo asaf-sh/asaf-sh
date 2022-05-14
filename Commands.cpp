@@ -323,9 +323,10 @@ void ChangeDirCommand::execute(){
     std::string old_path = curr_path;
 
     char* new_path;
-    std::cout << path << "\n";
     if (path.compare("-") == 0) {
+        std::cout << 1 << "\n";
         if (path_stack.size()) {
+            std::cout << 2 << "\n";
             new_path = path_stack.back();
             std::cout << new_path << "\n";
             path_stack.pop_back();
