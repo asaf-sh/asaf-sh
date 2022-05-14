@@ -163,11 +163,11 @@ void JobsList::removeJobById(int jobId){
   return;
 }
 
-void JobsList::killAllJobs(bool load){
-  if(load){
+void JobsList::killAllJobs(bool loud){
+  if(loud){
     cout << "smash: sending SIGKILL signal to " << jobs_list.size() << " jobs:" << endl;
     for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-      cout << itr->jobShortStr << endl;
+      cout << itr->jobShortStr() << endl;
     }
   }
 
