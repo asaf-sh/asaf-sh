@@ -520,12 +520,19 @@ void ExternalCommand::execute(){
 
 void PipeCommand::execute(){};
 
-void RedirectionCommand::execute(){};
+void RedirectionCommand::execute() {
+    std::string cmd_line = cmd_line;
+    char* command = cmd_line.substr(0, cmd_line.find_first_of(">"));
+    char* output_file = cmd_line.substr(0, cmd_line.find_last_of(">") + 1);
+    char mode = "w";
+    if (strcpy(args[2], ">>" == 0)) {
+        mode = "a";
+    }
+    freopen(output_file, "w", std::stdout);
+    SmallShell::getInstance().executeCommand(args[1]);
+    freopen(std::stdout, "w", output_file);
+}
 
-/*char** BuiltInCommand::parseLine(const char* cmd_line){
-  _parseCommandLine(cmd_line, args);
-  return args_to_ret;
-}*/
 int BuiltInCommand::getLen(char** args){
 	int count = 0;
 	for(; args[count] != nullptr; ++count);
@@ -562,9 +569,8 @@ ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line) {
     setReqArgsLen(2);
 };
-
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
-RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
+RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line) {};
 
 ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
   /*initializeArr(args, COMMAND_MAX_ARGS+1);
