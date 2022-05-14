@@ -408,7 +408,7 @@ void TouchCommand::execute(){
     time_t time_stamp_final = mktime(&time);
     struct utimbuf* time_buff;
     std::cout << 1 << "\n";
-    time_buff->actime = time_stamp_final;
+    time_buff.actime = time_stamp_final;
     std::cout << 2 << "\n";
     if (utime(file_name, time_buff) == -1) {
         std::cout << 3.1 << "\n";
