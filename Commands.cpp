@@ -319,13 +319,23 @@ bool ChangeDirCommand::validate(){
   return true;
 }
 void ChangeDirCommand::execute(){
-  if(!validate()){
-    return;
-  }
+    if (!validate()) {
+        return;
+    }
+    std::string path = args[1]
+    char* new_path;
+    if (path.compare("-") == 0) {
+        if (old_path_stack.size()) {
+            new_path = old_path_stack.pop_back();
+        };
+        else if (path.compare("..") == 0) {
+            int idx = path.find_last_of("/");
+            new_path = path.substr(0, idx);
+            old_path_stack.push_back(new_path);
+        };
+    };
   //prepare();
-  wordexp_t we;
-  wordexp(args[1], &we, 0);
-  if (chdir(we.we_wordv[0]) == -1) {
+  if (chdir(new_path) == -1) {
       return; // TOTO - perrror implementation
   };
   //cleanup();
