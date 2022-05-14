@@ -316,7 +316,7 @@ void ChangeDirCommand::execute(){
         return;
     }
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
-    getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH));
+    getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
 
     std::string path = args[1];
     std::string old_path = curr_path;
