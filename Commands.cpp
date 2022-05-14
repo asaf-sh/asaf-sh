@@ -395,7 +395,73 @@ void ForegroundCommand::execute(){}
 
 void BackgroundCommand::execute(){}
 
-void TailCommand::execute(){}
+static bool isNumber(const std::string& s)
+{
+    int string_size = s.length();
+    for (int i = 0; i < string_size; ++i)
+    {
+        if (!isdigit(s[i]))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool TailCommand::validate()
+{
+    std::string to_validate = args[1];
+    std::string validate_if_num = to_validate.substr(1);
+    if (!validateArgsLen() && args_len != 3)
+    {
+        std::cerr << "smash error: tail: invalid arguments \n";
+        return false;
+    }
+    if ((args_len == 3 && to_validate.find_first_of("-") != 0))
+    {
+        std::cerr << "smash error: tail: invalid arguments \n";
+        return false;
+    }
+    if (isNumber(validate_if_num))
+    {
+        std::cerr << "smash error: tail: invalid arguments \n";
+        return false;
+    }
+    return true;
+}
+
+void TailCommand::execute() {
+    if (!validate()) {
+        return;
+    }
+    char* file_name;
+    if (args_len == 3) {
+        setNumOfRows(std::stoi(std::string(args[1]).substr(1)));
+        file_name = args[2];
+    }
+    else {
+        file_name = args[1];
+    }
+    /*const int fd = open(file_name, O_RDONLY);
+    if (fd == -1) {
+        return; //TOTO - PERROR
+    }*/
+    std::ifstream file;
+    file.open(file_name, std::ifstream::in);
+    vector<std::string> rows_q;
+    rows_q.resize(N);
+    std::string temp_str;
+    while (getline(file, temp_str)) {
+        if ((signed int)rows_q.size() == N) {
+            rows_q.erase(rows_q.begin());
+        }
+        rows_q.push_back(temp_str.substr(0));
+    }
+    file.close();
+    for (auto itr = rows_q.begin(); itr != rows_q.end(); ++itr) {
+        std::cout << *itr << "\n";
+    }
+}
 
 void TouchCommand::execute(){
     if (!validate()) {
@@ -485,7 +551,9 @@ JobsCommand::JobsCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 KillCommand::KillCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ForegroundCommand::ForegroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
-TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line), N(10) {
+    setReqArgsLen(2);
+};
 TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){
     setReqArgsLen(3);
 };
