@@ -398,6 +398,7 @@ void TouchCommand::execute(){
         time_stamp[i] = raw_format_time.substr(0, idx);
         raw_format_time = raw_format_time.substr(idx);
     }
+    struct utimbuf* time_buff;
     time->tm_sec = std::stoi(time_stamp[0]);
     time->tm_min = std::stoi(time_stamp[1]);
     time->tm_hour = std::stoi(time_stamp[2]);
@@ -405,8 +406,8 @@ void TouchCommand::execute(){
     time->tm_mon = std::stoi(time_stamp[4]);
     time->tm_year = std::stoi(time_stamp[5]);
     time_t time_stamp_final = mktime(time);
-    utime(file_name, time_stamp_final);
-        }
+    time_buff->actime = time_stamp_final;
+    utime(file_name, time_buff);
     }
 
 bool TouchCommand::validate() {
