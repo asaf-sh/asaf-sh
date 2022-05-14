@@ -338,10 +338,8 @@ void ChangeDirCommand::execute(){
 
     char new_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     if (path.compare("-") == 0) {
-	    //printf("paths_size = %d\n",SmallShell::getInstance().old_path_stack.size());
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
             strcpy(new_path,SmallShell::getInstance().old_path_stack.back().c_str());
-            //std::cout << SmallShell::getInstance().old_path_stack.size() << "\n";
             SmallShell::getInstance().old_path_stack.pop_back();
         }
         else {
