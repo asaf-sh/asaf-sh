@@ -678,17 +678,18 @@ void RedirectionCommand::execute() {
     int first_redirect_sign = cmd_line.find_first_of(">");
     int last_redirect_sign = cmd_line.find_last_of(">");
     std::string cmd_line = cmd_line;
-    std::string command = cmd_line.substr(0, first_redirect_sign);
-    std::string output_file = cmd_line.substr(0, last_redirect_sign + 1);
-    if (first_redirect_sign != last_redirect_sign)) {
-        freopen(output_file, "a", std::stdout);
+    std::string command = cmd_line.substr(0, cmd_line.find_first_of(">"));
+    std::string output_file = cmd_line.substr(0, cmd_line.find_last_of(">") + 1);
+    const char mode;
+    if (strcpy(args[2], ">>" == 0)) {
+        mode = "a";
     }
-    else {
         freopen(output_file, "w", std::stdout);
-    }
+        mode = "w";
     const char* cmd_format = command.c_str;
     SmallShell::getInstance().executeCommand(cmd_format);
     //freopen(std::cout, "w", output_file);
+    freopen(std::cout, "w", output_file);
 }
 
 int BuiltInCommand::getLen(char** args){
