@@ -211,21 +211,22 @@ JobsList::JobEntry* JobsList::getJobById(int job_id){
   cmd->execute()
   fork
 }*/
-std::string JobsList::JobEntry::jobStr(bool verbose){
-  return (verbose ? "[" << job.job_id << "] " : "") << job.cmd_line <<  " : "  << job.pid\
-	    << (verbose ? " " << job.getElapsedTime() << " secs"  << (status == Status::stopped ? " (stopped)" : ""): "")\
-       << endl;
+
+
+
+std::string JobsList::JobEntry::jobStr(bool verbose) const {
+	return (verbose ? "[" + to_string(job_id) + "] " : "") \
+		+ string(cmd_line) + " : " + to_string(pid)\
+		+ (verbose ? " " + to_string(getElapsedTime()) +  " secs" : "")\
+		+ (verbose && status == Status::stopped ? " (stopped)" : "");
 }
+
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-  os << job.jobStr(true);
-    /*os << '[' << job.job_id << "] " << job.cmd_line <<  " : "  << job.pid\
-	    << ' ' << job.getElapsedTime() << " secs";
-    if(job.status == Status::stopped){
-      os << " (stopped)";
-    }*/
+    os << job.jobStr(true);
     return os;
 }
+
 char* SmallShell::DEFAULT_PROMPT = (char*) "smash";
 SmallShell::SmallShell(){
 // TODO: add your implementation
