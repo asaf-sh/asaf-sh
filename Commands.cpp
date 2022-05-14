@@ -393,11 +393,11 @@ void TouchCommand::execute(){
         unsigned int idx = raw_format_time.find_first_of(":");
         if (idx == std::string::npos) {
             time_stamp[i] = raw_format_time;
-            std::cot << raw_format_time << "\n";
+            std::cout << raw_format_time << "\n";
             break;
         }
         time_stamp[i] = raw_format_time.substr(0, idx);
-        std::cot << raw_format_time.substr(0, idx) << "\n";
+        std::cout << raw_format_time.substr(0, idx) << "\n";
         raw_format_time = raw_format_time.substr(idx);
     }
     struct utimbuf* time_buff;
