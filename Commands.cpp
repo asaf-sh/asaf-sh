@@ -315,6 +315,7 @@ void ChangeDirCommand::execute(){
     if (!validate()) {
         return;
     }
+    std::vector<char*> path_stack = ChangeDirCommand::old_path_stack;
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
 
@@ -323,9 +324,9 @@ void ChangeDirCommand::execute(){
 
     char* new_path;
     if (path.compare("-") == 0) {
-        if (old_path_stack.size()) {
-            new_path = old_path_stack.back();
-            old_path_stack.pop_back();
+        if (path_stack.size()) {
+            new_path = path_stack.back();
+            path_stack.pop_back();
         }
         else {
             return; // TOTO - perror implement
@@ -340,7 +341,7 @@ void ChangeDirCommand::execute(){
         }
     else {
         new_path = args[1];
-        old_path_stack.push_back(new_path);
+        path_stack.push_back(new_path);
     }
   //prepare();
   if (chdir(new_path) == -1) {
