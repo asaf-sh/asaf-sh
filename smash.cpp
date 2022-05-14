@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
         std::string cmd_line;
         std::getline(std::cin, cmd_line);
         smash.executeCommand(cmd_line.c_str());
-        printf("finished the cycle for (%s)\n", cmd_line.c_str());
+        //printf("finished the cycle for (%s)\n", cmd_line.c_str());
     }
     return 0;
 }
