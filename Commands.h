@@ -80,6 +80,9 @@ class PipeCommand : public Command {
  Command* cmd_write;
  int write_channel;
  int separatePipe();
+ void closePipe(int my_pipe[2]);
+ void setWriteSide(int my_pipe[2]);
+ void setReadSide(int my_pipe[2]);
  public:
   PipeCommand(const char* cmd_line);
   virtual ~PipeCommand();
