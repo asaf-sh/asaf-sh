@@ -324,7 +324,7 @@ void ChangeDirCommand::execute(){
     char* new_path;
     if (path.compare("-") == 0) {
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
-            new_path = path_stack.back();
+            new_path = SmallShell::getInstance().old_path_stack.back();
             std::cout << new_path << "\n";
             SmallShell::getInstance().old_path_stack.pop_back();
         }
