@@ -398,7 +398,7 @@ void TouchCommand::execute(){
         }
         time_stamp[i] = raw_format_time.substr(0, idx);
         std::cout << raw_format_time.substr(0, idx) << "\n";
-        raw_format_time = raw_format_time.substr(idx);
+        raw_format_time = raw_format_time.substr(idx + 1);
     }
     /*struct utimbuf* time_buff;
     time->tm_sec = std::stoi(time_stamp[0]);
