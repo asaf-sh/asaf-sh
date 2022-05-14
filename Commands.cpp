@@ -404,10 +404,10 @@ void TailCommand::execute(){
         if (rows_q.size() == N) {
             rows_q.erase(rows_q.begin());
         }
-        rows_q.push_back(temp_str.substr(0);
+        rows_q.push_back(temp_str.substr(0));
     }
     file.close();
-    for (auto itr = rows_q.begin(), itr != rows_q.end(), ++itr) {
+    for (auto itr = rows_q.begin(); itr != rows_q.end(); ++itr) {
         std::cout << itr * << "\n";
     }
 }
@@ -416,8 +416,6 @@ void TouchCommand::execute(){
     if (!validate()) {
         return;
     }
-    open(args)
-
     char* file_name = args[1];
     std::string raw_format_time = args[2];
     struct tm time = { 0 };
