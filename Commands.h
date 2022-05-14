@@ -208,8 +208,10 @@ public:
   }
   int getMaxId();
   void cleanup(){};
-  void printJobs();
 private:
+    bool inline compareJobs(JobEntry& j1, JobEntry& j2){
+        j1.getId() < j2.getId();
+    }
     static const int MAX_JOBS = 100;
     std::vector <JobsList::JobEntry> jobs_list;
 

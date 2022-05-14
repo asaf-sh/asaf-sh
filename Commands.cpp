@@ -477,15 +477,14 @@ int JobsList::getMaxId(){
   return max;
 }
 
-void JobsList::printJobs(){
-	cout << "jobs list: \t";
+void JobsList::printJobsList(){
+  std::sort(jobs_list.begin(), jobs_list.end(), compareJobs);
 	for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-		cout << *itr << "\t";
+		cout << *itr << endl;
 	}
 	cout << endl;
 }
 void JobsList::addJob(Command* cmd){
-	//printJobs();
     cleanup();
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
