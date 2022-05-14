@@ -202,8 +202,8 @@ public:
   JobEntry* getJobById(int jobId);
   void stopJobById(int id);
   void removeJobById(int jobId);
-  JobEntry* getLastJob(int lastJobId);
-  JobEntry* getLastStoppedJob(int jobId);
+  JobEntry* getLastJob();
+  JobEntry* getLastStoppedJob();
   // TODO: Add extra methods or modify exisitng ones as needed
   static JobsList& getInstance() // make SmallShell singleton
   {
@@ -249,7 +249,7 @@ class ForegroundCommand : public BuiltInCommand {
   ForegroundCommand(const char* cmd_line);
   virtual ~ForegroundCommand() {}
   void execute() override;
-  bool validate() override {};
+  bool validate() override {return true;}
 };
 
 class BackgroundCommand : public BuiltInCommand {
@@ -258,7 +258,7 @@ class BackgroundCommand : public BuiltInCommand {
   BackgroundCommand(const char* cmd_line);
   virtual ~BackgroundCommand() {}
   void execute() override;
-  void validate() override {};
+  bool validate() override {return true;}
 };
 
 class TailCommand : public BuiltInCommand {

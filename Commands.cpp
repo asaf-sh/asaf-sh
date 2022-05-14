@@ -144,7 +144,7 @@ JobsList::JobEntry::~JobEntry(){
 	//printf("in JE destructor, with pid=%d\n", getpid());
 }
 
-JobsList::JobEntry* JobsList::getLastStoppedJob(int jobId){
+JobsList::JobEntry* JobsList::getLastStoppedJob(){
     int max = -1;
 	for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
       if (itr->getStatus() == Status::stopped && itr->getId() > max){
@@ -197,7 +197,7 @@ JobsList::JobEntry::JobEntry(const JobEntry &job){
   pid = job.pid;
   strcpy(cmd_line, job.cmd_line);
 }
-JobsList::JobEntry* JobsList::getLastJob(int lastJobId){
+JobsList::JobEntry* JobsList::getLastJob(){
   return getJobById(getMaxId());
 }
 
@@ -334,12 +334,13 @@ void BackgroundCommand::execute(){
     }
   }
   else if (args_len == 2 && isNumber(args[1])){
-    job =  JobsList::getInstance().getJobById(stoi(args[1]));
+    int req_id = stoi(args[1]);
+    job =  JobsList::getInstance().getJobById(req_id);
     if (job == nullptr){
-      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
+      cerr << "smash error: bg: job-id " << req_id << " does not exist" << endl;
     }
     else if(job->getStatus() == Status::running){
-      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
+      cerr << "smash error: bg: job-id " << req_id  << " is already running in the background" << endl;
     }
     else{
       cout << job->jobStr(false) << endl;
@@ -347,7 +348,7 @@ void BackgroundCommand::execute(){
     }
   }
   else{
-    cerr << "smash error: fg: invalid arguments" << endl;
+    cerr << "smash error: bg: invalid arguments" << endl;
   }
 }
 
@@ -357,21 +358,24 @@ void ForegroundCommand::execute(){
     job = JobsList::getInstance().getLastJob();
     if (job == nullptr){
       cerr << "smash error: fg: jobs list is empty" << endl;    
+      return;
     }
   }
   else if (args_len == 2 && isNumber(args[1])){
-    job =  JobsList::getInstance().getJobById(stoi(args[1]));
+    int req_id = stoi(args[1]);
+    job =  JobsList::getInstance().getJobById(req_id);
     if (job == nullptr){
-      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
-    }
-    else{
-      cout << job->jobStr(false) << endl;
-      job->jobWait();
+      cerr << "smash error: fg: job-id " << req_id << " does not exist" << endl;
+      return;
     }
   }
   else{
     cerr << "smash error: fg: invalid arguments" << endl;
+    return;
   }
+
+  cout << job->jobStr(false) << endl;
+  job->jobWait();
 }
 
 bool ChangeDirCommand::validate(){
@@ -421,7 +425,6 @@ void ChangeDirCommand::execute(){
   //cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
-    std::cout << args_len;
   return args_len == req_args_len;
 }
 
@@ -447,8 +450,6 @@ void JobsCommand::execute(){
 }
 
 void KillCommand::execute(){}
-
-void BackgroundCommand::execute(){}
 
 /*static bool isNumber(const std::string& s)
 {
@@ -634,8 +635,6 @@ ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
 
 void KillCommand::execute(){}
 
-void BackgroundCommand::execute(){}
-
 void TailCommand::execute(){}
 
 void TouchCommand::execute(){}
@@ -643,6 +642,7 @@ void TouchCommand::execute(){}
 
 
 void SmallShell::executeCommand(const char *cmd_line) {
+  JobsList::getInstance().updateAllJobsStatus();
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
