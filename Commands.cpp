@@ -389,7 +389,7 @@ void TouchCommand::execute(){
     struct tm* time = { 0 };
     std::string time_stamp[6];
     int i = 0;
-    while (raw_format_time.length() && i < 10) {
+    while (raw_format_time.length() && i < 6) {
         unsigned int idx = raw_format_time.find_first_of(":");
         if (idx == std::string::npos) {
             time_stamp[i] = raw_format_time;
@@ -401,7 +401,7 @@ void TouchCommand::execute(){
         raw_format_time = raw_format_time.substr(idx + 1);
         ++i;
     }
-    /*struct utimbuf* time_buff;
+    struct utimbuf* time_buff;
     time->tm_sec = std::stoi(time_stamp[0]);
     time->tm_min = std::stoi(time_stamp[1]);
     time->tm_hour = std::stoi(time_stamp[2]);
@@ -412,7 +412,7 @@ void TouchCommand::execute(){
     time_buff->actime = time_stamp_final;
     if (utime(file_name, time_buff) == -1) {
         return;
-    }*/
+    }
     }
 
 bool TouchCommand::validate() {
