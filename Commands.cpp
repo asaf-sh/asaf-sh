@@ -91,11 +91,17 @@ static void badFork(){
  perror("smash error: fork failed");
 };
 
-Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
+Command::Command(const char* cmd_line) : cmd_line(cmd_line){
+	getFgCommandLine(fg_cmd_line);
+}
+void Command::getFgCommandLine(char* fg_cmd_line){
+	strcpy(fg_cmd_line, cmd_line);
+	_removeBackgroundSign(fg_cmd_line);
+}
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
 void GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
-  printf("%s\n",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
+  cout << getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH) << endl;
 }
 
 bool JobsList::JobEntry::stop(){
@@ -222,8 +228,11 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
     return new RedirectionCommand(cmd_line);
   }
 
+  char fg_cmd_line[COMMAND_MAX_LENGTH];
+  strcpy(fg_cmd_line, cmd_line);
+  _removeBackgroundSign(fg_cmd_line);
 
-  string cmd_s = _trim(string(cmd_line));
+  string cmd_s = _trim(string(fg_cmd_line));
   string firstWord = cmd_s.substr(0, cmd_s.find_first_of(" \n"));
   
   if (firstWord.compare("pwd") == 0) {
@@ -375,9 +384,9 @@ static void initializeArr(char** arr, int len){
 
 BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
   initializeArr(args, COMMAND_MAX_ARGS);
-  char* cmd_line2 = (char*) cmd_line;
-  _removeBackgroundSign(cmd_line2);
-  _parseCommandLine(cmd_line2, args);
+  //char* cmd_line2 = (char*) cmd_line;
+//  _removeBackgroundSign(cmd_line2);
+  _parseCommandLine(fg_cmd_line, args);
   args_len = getLen(args);
 };
 
@@ -397,11 +406,11 @@ PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
 RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
 
 ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
-  initializeArr(args, COMMAND_MAX_ARGS+1);
+  /*initializeArr(args, COMMAND_MAX_ARGS+1);
   args[0] = BASH;
   char * cmd_line2 = (char*) cmd_line;
   _removeBackgroundSign(cmd_line2);
-  _parseCommandLine(cmd_line2, &args[1]);
+  _parseCommandLine(cmd_line2, &args[1]);*/
 };
 
 //Command::~Command(){};

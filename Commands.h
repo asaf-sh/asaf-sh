@@ -7,6 +7,7 @@
 #include <time.h>
 #include <signal.h>
 
+#define COMMAND_MAX_LENGTH (80)
 #define COMMAND_ARGS_MAX_LENGTH (200)
 #define COMMAND_MAX_ARGS (20)
 #define BASH ((char*) "/bin/bash")
@@ -14,9 +15,12 @@
 using namespace std;
 class Command {
 // TODO: Add your data members
-private:
+ private:	  
+  void getFgCommandLine(char* fg_command_line);
+ protected:
   const char* cmd_line;
   const char* cmd_name;
+  char fg_cmd_line[COMMAND_MAX_LENGTH];
  public:
   Command(const char* cmd_line);
   virtual ~Command(){};
