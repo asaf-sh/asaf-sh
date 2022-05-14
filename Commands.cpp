@@ -386,7 +386,7 @@ void TouchCommand::execute(){
     }
     char* file_name = args[1];
     std::string raw_format_time = args[2];
-    struct tm* time;
+    struct tm* time = { 0 };
     std::string* time_stamp[6];
     int i = 0;
     while (raw_format_time.length()){
@@ -396,14 +396,14 @@ void TouchCommand::execute(){
             break;
         time_stamp[i] = raw_format_time.substr(0, idx);
         raw_format_time = raw_format_time.substr(idx);
-        tm->tm_sec = std::stoi(time_stamp[0]);
-        tm->tm_min = std::stoi(time_stamp[1]);
-        tm->tm_hour = std::stoi(time_stamp[2]);
-        tm->tm_mday = std::stoi(time_stamp[3]);
-        tm->tm_mon = std::stoi(time_stamp[4]);
-        tm->tm_year = std::stoi(time_stamp[5]);
+        time->tm_sec = std::stoi(time_stamp[0]);
+        time->tm_min = std::stoi(time_stamp[1]);
+        time->tm_hour = std::stoi(time_stamp[2]);
+        time->tm_mday = std::stoi(time_stamp[3]);
+        time->tm_mon = std::stoi(time_stamp[4]);
+        time->tm_year = std::stoi(time_stamp[5]);
         time_t time_stamp_final = mktime(&tm);
-        utime(file_name, time_stamp_final)
+        utime(file_name, time_stamp_final);
 }
 
 bool TouchCommand::validate() {
