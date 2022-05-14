@@ -324,8 +324,10 @@ void ChangeDirCommand::execute(){
     }
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
+
     std::string path = args[1];
     std::string old_path = curr_path;
+
     char* new_path;
     if (path.compare("-") == 0) {
         if (old_path_stack.size()) {
@@ -345,7 +347,7 @@ void ChangeDirCommand::execute(){
         }
     else {
         new_path = args[1];
-        old_path_stack.push_back(curr_path);
+        old_path_stack.push_back(new_path);
     }
   //prepare();
   if (chdir(new_path) == -1) {

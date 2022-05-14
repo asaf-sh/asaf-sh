@@ -102,7 +102,7 @@ class ChangePromptCommand : public BuiltInCommand{
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
-    std::vector<char*> old_path_stack;
+    static std::vector<char*> old_path_stack;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
