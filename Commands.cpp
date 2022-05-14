@@ -93,6 +93,11 @@ static void badFork(){
  perror("smash error: fork failed");
 };
 
+static bool isNumber(const string& str)
+{
+    return str.find_first_not_of("0123456789") == string::npos;
+}
+
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){
 	getFgCommandLine(fg_cmd_line);
 }
@@ -318,42 +323,57 @@ void ShowPidCommand::execute(){
   std::cout << getpid() << endl;
 }
 
-void ForegroundCommand::execute(){
-  if(validate()){
-  JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
-  if(job != nullptr){
-    job->jobWait();
-  }
-  else{
-    cerr << "smash error: fg: job-id " << req_id << " does not exist" << endl;
-  }
-  }
-}
 
-static bool isNumber(const string& str)
-{
-    return str.find_first_not_of("0123456789") == string::npos;
-}
 
-bool ForegroundCommand::validate(){
+void BackgroundCommand::execute(){
+  JobsList::JobEntry* job;
   if (args_len == 1){
-    req_id = JobsList::getInstance().getMaxId();
-    if (req_id == 0){
-      cerr << "smash error: fg: jobs list is empty" << endl;
-      return false;
+    job = JobsList::getInstance().getLastStoppedJob();
+    if (job == nullptr){
+      cerr << "smash error: bg: there is no stopped jobs to resume" << endl;    
     }
-    return true;
   }
   else if (args_len == 2 && isNumber(args[1])){
-      req_id = stoi(args[1]);
-      return true;
+    job =  JobsList::getInstance().getJobById(stoi(args[1]));
+    if (job == nullptr){
+      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
     }
-
+    else if(job->getStatus() == Status::running){
+      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
+    }
+    else{
+      cout << job->jobStr(false) << endl;
+      job->cont();
+    }
+  }
   else{
     cerr << "smash error: fg: invalid arguments" << endl;
-    return false;
   }
 }
+
+void ForegroundCommand::execute(){
+  JobsList::JobEntry* job;
+  if (args_len == 1){
+    job = JobsList::getInstance().getLastJob();
+    if (job == nullptr){
+      cerr << "smash error: fg: jobs list is empty" << endl;    
+    }
+  }
+  else if (args_len == 2 && isNumber(args[1])){
+    job =  JobsList::getInstance().getJobById(stoi(args[1]));
+    if (job == nullptr){
+      cerr << "smash error: fg: job-id " << job->getId() << " does not exist" << endl;
+    }
+    else{
+      cout << job->jobStr(false) << endl;
+      job->jobWait();
+    }
+  }
+  else{
+    cerr << "smash error: fg: invalid arguments" << endl;
+  }
+}
+
 bool ChangeDirCommand::validate(){
   if(!validateArgsLen()){
     std::cerr << "smash error: cd: too many arguments \n";

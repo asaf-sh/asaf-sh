@@ -147,7 +147,7 @@ public:
       time_t start_time;
       pid_t pid;
       Status status;
-      std::string jobStr(bool verbose) const;
+      
       //bool is_fg
     public:
       JobEntry(Command* cmd, int job_id):job_id(job_id){
@@ -168,6 +168,7 @@ public:
       bool cont();
       void start();
       void jobWait();
+      std::string jobStr(bool verbose) const;
       inline void killJob(){
 	  kill(pid, SIGKILL);
       }
@@ -244,13 +245,11 @@ class KillCommand : public BuiltInCommand {
 
 class ForegroundCommand : public BuiltInCommand {
  // TODO: Add your data members
- private:
-  int req_id;
  public:
   ForegroundCommand(const char* cmd_line);
   virtual ~ForegroundCommand() {}
   void execute() override;
-  bool validate() override;
+  bool validate() override {};
 };
 
 class BackgroundCommand : public BuiltInCommand {
@@ -259,6 +258,7 @@ class BackgroundCommand : public BuiltInCommand {
   BackgroundCommand(const char* cmd_line);
   virtual ~BackgroundCommand() {}
   void execute() override;
+  void validate() override {};
 };
 
 class TailCommand : public BuiltInCommand {
