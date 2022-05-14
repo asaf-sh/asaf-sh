@@ -98,6 +98,7 @@ void Command::getFgCommandLine(char* fg_cmd_line){
 	strcpy(fg_cmd_line, cmd_line);
 	_removeBackgroundSign(fg_cmd_line);
 }
+	
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
 void GetCurrDirCommand::execute(){
   char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
@@ -360,7 +361,10 @@ void TailCommand::execute(){}
 void TouchCommand::execute(){};
 
 void ExternalCommand::execute(){
-  execv(BASH, args);
+  printf("in External::execute\n");
+  char* execv_arr[] = {BASH, (char*) "-c", fg_cmd_line};
+
+  execv(BASH, execv_arr);
   }
 
 void PipeCommand::execute(){};
