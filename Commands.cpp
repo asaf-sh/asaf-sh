@@ -389,7 +389,7 @@ void TouchCommand::execute(){
     struct tm* time = { 0 };
     std::string time_stamp[6];
     int i = 0;
-    while (raw_format_time.length()) {
+    while (raw_format_time.length() && i < 10) {
         unsigned int idx = raw_format_time.find_first_of(":");
         if (idx == std::string::npos) {
             time_stamp[i] = raw_format_time;
@@ -399,6 +399,7 @@ void TouchCommand::execute(){
         time_stamp[i] = raw_format_time.substr(0, idx);
         std::cout << raw_format_time.substr(0, idx) << "\n";
         raw_format_time = raw_format_time.substr(idx + 1);
+        ++i;
     }
     /*struct utimbuf* time_buff;
     time->tm_sec = std::stoi(time_stamp[0]);
