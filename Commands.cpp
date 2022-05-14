@@ -405,9 +405,9 @@ void TouchCommand::execute(){
             time_stamp[i] = raw_format_time;
             break;
         }
+        time_stamp[i] = raw_format_time.substr(0, idx);
+        raw_format_time = raw_format_time.substr(idx);
     }
-    time_stamp[i] = raw_format_time.substr(0, idx);
-    raw_format_time = raw_format_time.substr(idx);
     time->tm_sec = std::stoi(time_stamp[0]);
     time->tm_min = std::stoi(time_stamp[1]);
     time->tm_hour = std::stoi(time_stamp[2]);
