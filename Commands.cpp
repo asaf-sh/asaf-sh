@@ -308,7 +308,7 @@ void ShowPidCommand::execute(){
 
 bool ChangeDirCommand::validate(){
   if(!validateArgsLen()){
-    std::cerr << "smash error: cd: too many arguments";
+    std::cerr << "smash error: cd: too many arguments /n";
     return false;
   }
   return true;
@@ -348,6 +348,7 @@ void ChangeDirCommand::execute(){
   cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
+    std::cout << args_len;
   return args_len == req_args_len;
 }
 
