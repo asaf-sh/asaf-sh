@@ -378,12 +378,43 @@ void ForegroundCommand::execute(){}
 
 void BackgroundCommand::execute(){}
 
-void TailCommand::execute(){}
+void TailCommand::execute(){
+    if (!validate()) {
+        return;
+    }
+    char* file_name;
+    if (args_len == 3) {
+        setNumOfRows(std::stoi(str(args[1]).substr(1)));
+        file_name = args[2];
+    }
+    else {
+        file_name = args[1];
+    }
+    const int fd = open(file_name, O_RDONLY);
+    if (fd == -1) {
+        return; //TOTO - PERROR
+    }
+    ifstream file(file_name);
+    vector<std::string> rows_q;
+    rows_q.resize(N);
+    std::str temp_str;
+    while getline(file, temp_str) {
+        if (rows_q.size() == N) {
+            rows_q.pop_front();
+        }
+        rows_q.push_back(temp_str.substr(0);
+    }
+    close(fd);
+    for (auto itr = rows_q.begin(), itr != rows_q.end(), ++itr) {
+        std::cout << itr * << "\n";
+    }
+}
 
 void TouchCommand::execute(){
     if (!validate()) {
         return;
     }
+    open(args)
 
     char* file_name = args[1];
     std::string raw_format_time = args[2];
@@ -401,7 +432,6 @@ void TouchCommand::execute(){
     time.tm_sec = std::stoi(time_stamp[0]);
     time.tm_min = std::stoi(time_stamp[1]);
     time.tm_hour = std::stoi(time_stamp[2]);
-    //reaches here
     time.tm_mday = std::stoi(time_stamp[3]);
     time.tm_mon = (std::stoi(time_stamp[4]) - 1);
     time.tm_year = (std::stoi(time_stamp[5]) - 1900);
@@ -454,6 +484,28 @@ BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
   args_len = getLen(args);
 };
 
+void setNumOfRows(int num) {
+    N = num;
+}
+
+
+bool TailCommand::validate() {
+    if (!validateArgsLen() || args_len != 3 ||\
+        (args_len == 3 && str(args[1][0]).compare("-") != 0) ||\
+        isnumber(str(args[1]).substr[1])) {
+        std::cerr << "smash error: touch: invalid arguments \n";
+        return false;
+    }
+    return true;
+}
+
+static bool is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
 ChangePromptCommand::ChangePromptCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line): BuiltInCommand(cmd_line){};
 QuitCommand::QuitCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
@@ -461,7 +513,8 @@ JobsCommand::JobsCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 KillCommand::KillCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ForegroundCommand::ForegroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
-TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line), N(10){
+setReqArgsLen(2)};
 TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){
     setReqArgsLen(3);
 };

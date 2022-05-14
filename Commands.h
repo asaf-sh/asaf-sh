@@ -232,10 +232,14 @@ class BackgroundCommand : public BuiltInCommand {
 };
 
 class TailCommand : public BuiltInCommand {
+private:
+    int N;
  public:
   TailCommand(const char* cmd_line);
+  void setNumOfRows(int num);
   virtual ~TailCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class TouchCommand : public BuiltInCommand {
