@@ -484,15 +484,15 @@ BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
   args_len = getLen(args);
 };
 
-void setNumOfRows(int num) {
+void TailCommand::setNumOfRows(int num) {
     N = num;
 }
 
 
 bool TailCommand::validate() {
     if (!validateArgsLen() || args_len != 3 ||\
-        (args_len == 3 && str(args[1][0]).compare("-") != 0) ||\
-        isnumber(str(args[1]).substr[1])) {
+        (args_len == 3 && std::str(args[1])[0].compare("-") != 0) ||\
+        isnumber(std::str(args[1]).substr[1])) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
