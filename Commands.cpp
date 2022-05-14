@@ -310,37 +310,13 @@ bool ChangeDirCommand::validate(){
 }
 void ChangeDirCommand::execute(){
   if(!validate()){
-      if (chdir(args[1]) == -1) {
-          return; //TODO - error
-      }
     return;
   }
-
-  prepare();
-  
-  //consider moving to validate or prepare method
-  /*if (sizeof(args)/sizeof(*args) > 1){
-    std::cerr << "smash error: cd: too many arguments\n";
-  }*/
-
-  /*else if (args[0].compare("-") == 0){
-    if (old_dir_path == nullptr){
-      	std::cerr << "smash error: cd: OLDPWD not set\n";
-      }
-    else{
-    	SmallShel::getInstance()->chdir(old_dir_path);
-    }
-  }*/
-      
- /* else if args[0].compare("..") == 0:
-    char* curr_path = SmallShel->getInstance()->GetCurrDirCommand::execute();
-    std::string str(curr_path);
-    old_dir_path = strcpy(str)
-    SmallShell::getInstance()->chdir("..");*/
- 
-    //getcwd(old_dir_path, 0);
-  chdir(args[0]);
-  cleanup();
+  //prepare();
+  if (chdir(args[1]) == -1) {
+      return; // TOTO - perrror implementation
+  };
+  //cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
     std::cout << args_len << "\n";
