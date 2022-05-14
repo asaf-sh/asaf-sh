@@ -509,10 +509,11 @@ void TailCommand::setNumOfRows(int num) {
 
 
 bool TailCommand::validate() {
+    std::string to_validate = args[1];
 
     if (!validateArgsLen() || args_len != 3 ||\
-        (args_len == 3 && (std::string str(args[1])[0].compare("-") != 0) ||\
-        isnumber((std::string str(args[1])).substr[1])) {
+        (args_len == 3 && (to_validate[0].compare("-") != 0) ||\
+        isnumber(to_validate.substr[1])) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
