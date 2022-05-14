@@ -389,22 +389,25 @@ void TouchCommand::execute(){
     struct tm* time = { 0 };
     std::string time_stamp[6];
     int i = 0;
-    while (raw_format_time.length()){
+    while (raw_format_time.length()) {
         unsigned int idx = raw_format_time.find_first_of(":");
-        if (idx == std::string::npos){
+        if (idx == std::string::npos) {
             time_stamp[i] = raw_format_time;
             break;
-        time_stamp[i] = raw_format_time.substr(0, idx);
-        raw_format_time = raw_format_time.substr(idx);
-        time->tm_sec = std::stoi(time_stamp[0]);
-        time->tm_min = std::stoi(time_stamp[1]);
-        time->tm_hour = std::stoi(time_stamp[2]);
-        time->tm_mday = std::stoi(time_stamp[3]);
-        time->tm_mon = std::stoi(time_stamp[4]);
-        time->tm_year = std::stoi(time_stamp[5]);
-        time_t time_stamp_final = mktime(&time);
-        utime(file_name, time_stamp_final);
-}
+        }
+    }
+    time_stamp[i] = raw_format_time.substr(0, idx);
+    raw_format_time = raw_format_time.substr(idx);
+    time->tm_sec = std::stoi(time_stamp[0]);
+    time->tm_min = std::stoi(time_stamp[1]);
+    time->tm_hour = std::stoi(time_stamp[2]);
+    time->tm_mday = std::stoi(time_stamp[3]);
+    time->tm_mon = std::stoi(time_stamp[4]);
+    time->tm_year = std::stoi(time_stamp[5]);
+    time_t time_stamp_final = mktime(time);
+    utime(file_name, time_stamp_final);
+        }
+    }
 
 bool TouchCommand::validate() {
     if (!validateArgsLen()) {
