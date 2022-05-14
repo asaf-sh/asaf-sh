@@ -133,14 +133,6 @@ JobsList::JobEntry::~JobEntry(){
 	//printf("in JE destructor, with pid=%d\n", getpid());
 }
 
-void JobsList::removeFinishedJobs(){
-    for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-      if (itr->getStatus() == Status::finished){
-        jobs_list.erase(itr);
-      }
-    }
-}
-
 JobsList::JobEntry* JobsList::getLastStoppedJob(int jobId){
     int max = -1;
 	for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
@@ -355,7 +347,10 @@ void BuiltInCommand::cleanup(){
 
 void QuitCommand::execute(){}
 
-void JobsCommand::execute(){}
+void JobsCommand::execute(){
+	JobsList::getInstance().removeFinishedJobs();
+	JobsList::getInstance().printJobsList();
+}
 
 void KillCommand::execute(){}
 
@@ -432,8 +427,6 @@ ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
 //JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 
-void JobsCommand::execute(){}
-
 void KillCommand::execute(){}
 
 void ForegroundCommand::execute(){}
@@ -477,20 +470,45 @@ int JobsList::getMaxId(){
   return max;
 }
 
-void JobsList::printJobsList(){
-  std::sort(jobs_list.begin(), jobs_list.end(), compareJobs);
-	for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-		cout << *itr << endl;
+void JobsList::printJobsListA(bool verbose){
+  std::sort(jobs_list.begin(),jobs_list.end() , JobsList::compareJobs);
+  for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+		cout << *itr << (verbose && itr->getStatus() == Status::running ? " (running)" : "") << endl;
 	}
-	cout << endl;
+}
+
+void JobsList::removeFinishedJobs(){
+	updateAllJobsStatus();
+	jobs_list.erase(std::remove_if(jobs_list.begin(), jobs_list.end(), isFinished), jobs_list.end());
+}
+void JobsList::printJobsList(){
+	printJobsListA(false);
+}
+void JobsList::JobEntry::updateStatus(){
+	int wstatus;
+	if(waitpid(pid, &wstatus, WNOHANG) == 0){
+		return;
+	}
+	if(WIFEXITED(wstatus)){
+		status = Status::finished;
+	}
+	if(WIFSTOPPED(wstatus)){
+		status = Status::stopped;
+	}
+}
+
+void JobsList::updateAllJobsStatus(){
+	for (auto it=jobs_list.begin(); it != jobs_list.end(); ++it){
+		it->updateStatus();
+	}
 }
 void JobsList::addJob(Command* cmd){
-    cleanup();
+    removeFinishedJobs();
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
     delete cmd;
     jobs_list.push_back(job);
-    JobEntry* job2 = getJobById(new_id);
+    //JobEntry* job2 = getJobById(new_id);
 //    cout << "starting job\t:" << *job2 << endl;
 //    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
@@ -530,7 +548,11 @@ void JobsList::JobEntry::start(){
         int wstatus;
         waitpid(pid, &wstatus, 0);
 	//printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
-        if (WIFSTOPPED(wstatus)){
+        if(WIFEXITED(wstatus)){
+	status = Status::finished;
+	}
+
+	else if (WIFSTOPPED(wstatus)){
          stop();
         }
         else{ //assume only get here for terminated or killed child process/command

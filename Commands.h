@@ -2,6 +2,7 @@
 #define SMASH_COMMAND_H_
 
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 #include <string>
 #include <string.h>
@@ -172,6 +173,8 @@ public:
 	  kill(pid, SIGKILL);
       }
 
+      void updateStatus();
+
       inline void resetStartTime(){
 	      start_time = time(NULL);
       }
@@ -192,8 +195,10 @@ public:
   ~JobsList(){};
   void addJob(Command* cmd);
   void printJobsList();
+  void printJobsListA(bool verbose);
   void killAllJobs();
   void removeFinishedJobs();
+  void updateAllJobsStatus();
   JobEntry* getJobById(int jobId);
   void stopJobById(int id);
   void removeJobById(int jobId);
@@ -207,11 +212,14 @@ public:
     return instance;
   }
   int getMaxId();
-  void cleanup(){};
 private:
-    bool inline compareJobs(JobEntry& j1, JobEntry& j2){
-        j1.getId() < j2.getId();
+    bool static compareJobs(JobEntry& j1, JobEntry& j2){
+        return j1.getId() < j2.getId();
     }
+    bool static isFinished(JobEntry& job){
+    	return job.getStatus() == Status::finished;
+    }
+
     static const int MAX_JOBS = 100;
     std::vector <JobsList::JobEntry> jobs_list;
 
