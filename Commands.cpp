@@ -413,13 +413,14 @@ void TouchCommand::execute(){
     time.tm_hour = std::stoi(time_stamp[2]);
     //reaches here
     time.tm_mday = std::stoi(time_stamp[3]);
-    time.tm_mon = std::stoi(time_stamp[4]);
-    time.tm_year = std::stoi(time_stamp[5]);
+    time.tm_mon = std::stoi(time_stamp[4]) - 1;
+    time.tm_year = std::stoi(time_stamp[5]) - 1900;
     time_t time_stamp_final = mktime(&time);
     struct utimbuf* time_buff;
     std::cout << 1 << "\n";
-    std::cout << time_stamp_final << "\n";
+    //std::cout << time_stamp_final << "\n";
     time_buff->actime = time_stamp_final;
+    time_buff->modtime = time_stamp_final;
     std::cout << 2 << "\n";
     if (utime(file_name, time_buff) == -1) {
         std::cout << 3.1 << "\n";
