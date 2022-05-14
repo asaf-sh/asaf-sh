@@ -522,13 +522,16 @@ void PipeCommand::execute(){};
 
 void RedirectionCommand::execute() {
     std::string cmd_line = cmd_line;
-    char* command = cmd_line.substr(0, cmd_line.find_first_of(">"));
-    char* output_file = cmd_line.substr(0, cmd_line.find_last_of(">") + 1);
-    char mode = "w";
+    std::string command = cmd_line.substr(0, cmd_line.find_first_of(">"));
+    std::string output_file = cmd_line.substr(0, cmd_line.find_last_of(">") + 1);
+    const char mode;
     if (strcpy(args[2], ">>" == 0)) {
         mode = "a";
     }
-    freopen(output_file, "w", std::cout);
+    else {
+        mode = "w";
+    }
+    freopen(output_file, mode, std::cout);
     SmallShell::getInstance().executeCommand(command);
     freopen(std::cout, "w", output_file);
 }
