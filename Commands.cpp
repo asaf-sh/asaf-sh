@@ -395,14 +395,14 @@ void TailCommand::execute(){
     if (fd == -1) {
         return; //TOTO - PERROR
     }*/
-    std::ifstream file(file_name, std::ifstream::in);
-    file.open();
+    std::ifstream file;
+    file.open(file_name, std::ifstream::in);
     vector<std::string> rows_q;
     rows_q.resize(N);
     std::string temp_str;
-    while getline(file, temp_str) {
+    while (getline(file, temp_str)) {
         if (rows_q.size() == N) {
-            rows_q.pop_front();
+            rows_q.erase(rows_q.begin());
         }
         rows_q.push_back(temp_str.substr(0);
     }
