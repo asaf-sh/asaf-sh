@@ -102,6 +102,7 @@ class ChangePromptCommand : public BuiltInCommand{
 
 class ChangeDirCommand : public BuiltInCommand {
   private:
+    std::vector<char*> old_path_stack;
   //std::string old_dir_path = nullptr;
 // TODO: Add your data members public:
   public:
@@ -112,8 +113,6 @@ class ChangeDirCommand : public BuiltInCommand {
 };
 
 class GetCurrDirCommand : public BuiltInCommand {
- private:
-     std::vector<char*> old_path_stack;
  public:
   GetCurrDirCommand(const char* cmd_line);
   virtual ~GetCurrDirCommand() {}
