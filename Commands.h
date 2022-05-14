@@ -254,7 +254,7 @@ class SmallShell {
   SmallShell();
 
  public:
-  std::vector<char*> old_path_stack;
+  std::vector<std::string> old_path_stack;
   Command *CreateCommand(const char* cmd_line, bool* isExternal);
   SmallShell(SmallShell const&)      = delete; // disable copy ctor
   void operator=(SmallShell const&)  = delete; // disable = operator
