@@ -441,6 +441,7 @@ TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line) {
     setReqArgsLen(2);
+    old_path_stack.push_back("0");
 };
 
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
