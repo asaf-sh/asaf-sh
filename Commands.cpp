@@ -282,7 +282,7 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   return nullptr;
 }
 
-void BuiltInCommend::setReqArgsLen(int len){
+void BuiltInCommand::setReqArgsLen(int len){
     req_args_len = len;
 }
 
