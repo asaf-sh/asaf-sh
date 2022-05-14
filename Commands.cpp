@@ -513,7 +513,7 @@ bool TailCommand::validate() {
 
     if (!validateArgsLen() || args_len != 3 ||\
         (args_len == 3 && to_validate.find_first_of("-") != 0) ||\
-        isNumber(*to_validate.substr(1))) {
+        isNumber(&to_validate.substr(1))) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
