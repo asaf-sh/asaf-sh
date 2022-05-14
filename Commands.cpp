@@ -93,10 +93,12 @@ static void badFork(){
 };
 
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
+
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
-void GetCurrDirCommand::execute(){
-  char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
-  printf("%s\n",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
+
+void GetCurrDirCommand::execute() {
+    char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
+    printf("%s\n", getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
 }
 
 /*void JobsList::JobEntry::kill(){//TODO - REAL IMPLEMENT
@@ -313,18 +315,29 @@ void ChangeDirCommand::execute(){
     if (!validate()) {
         return;
     }
-    std::string path = args[1]
+    char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
+    getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH));
+
+    std::string path = args[1];
     char* new_path;
     if (path.compare("-") == 0) {
         if (old_path_stack.size()) {
             new_path = old_path_stack.pop_back();
-        };
-        else if (path.compare("..") == 0) {
-            int idx = path.find_last_of("/");
-            new_path = path.substr(0, idx);
+        }
+        else {
+            return; // TOTO - perror implement
+        }
+    }
+
+    else if (path.compare("..") == 0) {
+            int idx = curr_path.find_last_of("/");
+            new_path = curr_path.substr(0, idx);
             old_path_stack.push_back(new_path);
-        };
-    };
+        }
+    else {
+        new_path = args[1];
+        old_path_stack.push_back(curr_path);
+    }
   //prepare();
   if (chdir(new_path) == -1) {
       return; // TOTO - perrror implementation
