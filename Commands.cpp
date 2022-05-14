@@ -282,6 +282,10 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   return nullptr;
 }
 
+void BuiltInCommend::setReqArgsLen(int len){
+    req_args_len = len;
+}
+
 
 void ChangePromptCommand::execute(){
   if(args_len == 1){
@@ -413,7 +417,9 @@ BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_
 TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
-ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
+ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line) {
+    setReqArgsLen(2);
+};
 
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
 RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
