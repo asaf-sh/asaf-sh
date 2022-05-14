@@ -407,17 +407,20 @@ void TouchCommand::execute(){
         raw_format_time = raw_format_time.substr(idx + 1);
         ++i;
     }
-    std::cout << 1 << "\n";
+
     time.tm_sec = std::stoi(time_stamp[0]);
-    std::cout << 2 << "\n";
     time.tm_min = std::stoi(time_stamp[1]);
-    std::cout << 3 << "\n";
     time.tm_hour = std::stoi(time_stamp[2]);
-    std::cout << 4 << "\n";
+    //reaches here
     time.tm_mday = std::stoi(time_stamp[3]);
+    std::cout << 1 << "\n";
+    std::cout << time_stamp[3] << "\n";
     time.tm_mon = std::stoi(time_stamp[4]);
+    std::cout << 2 << "\n";
+    std::cout << time_stamp[4] << "\n";
     time.tm_year = std::stoi(time_stamp[5]);
-    
+    std::cout << 3 << "\n";
+    std::cout << time_stamp[5] << "\n";
     time_t time_stamp_final = mktime(&time);
     struct utimbuf* time_buff;
     time_buff->actime = time_stamp_final;
