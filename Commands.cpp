@@ -400,7 +400,7 @@ void TouchCommand::execute(){
     std::string time_stamp[6];
     int i = 0;
     while (raw_format_time.length()){
-        int idx = raw_format_time.find_first_of(":");
+        unsigned int idx = raw_format_time.find_first_of(":");
         if (idx == std::string::npos){
             time_stamp[i] = raw_format_time;
             break;
@@ -412,7 +412,7 @@ void TouchCommand::execute(){
         time->tm_mday = std::stoi(time_stamp[3]);
         time->tm_mon = std::stoi(time_stamp[4]);
         time->tm_year = std::stoi(time_stamp[5]);
-        time_t time_stamp_final = mktime(&tm);
+        time_t time_stamp_final = mktime(&time);
         utime(file_name, time_stamp_final);
 }
 
