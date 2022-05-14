@@ -101,8 +101,6 @@ class ChangePromptCommand : public BuiltInCommand{
 };
 
 class ChangeDirCommand : public BuiltInCommand {
-  private:
-    static std::vector<char*> old_path_stack;
 // TODO: Add your data members public:
   public:
   ChangeDirCommand(const char* cmd_line);
@@ -281,6 +279,7 @@ class SmallShell {
   SmallShell();
 
  public:
+  std::vector<char*> old_path_stack;
   Command *CreateCommand(const char* cmd_line, bool* isExternal);
   SmallShell(SmallShell const&)      = delete; // disable copy ctor
   void operator=(SmallShell const&)  = delete; // disable = operator
