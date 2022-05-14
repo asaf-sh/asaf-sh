@@ -258,6 +258,8 @@ class BackgroundCommand : public BuiltInCommand {
 };
 
 class TailCommand : public BuiltInCommand {
+private:
+    int N;
  public:
   TailCommand(const char* cmd_line);
   virtual ~TailCommand() {}
