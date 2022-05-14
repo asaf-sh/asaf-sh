@@ -329,8 +329,12 @@ void ChangeDirCommand::execute(){
 
     std::string path = args[1];
     std::string old_path = curr_path;
+<<<<<<< HEAD
 
     char new_path[GetCurrDirCommand::MAX_PATH_LENGTH];
+=======
+    char* new_path;
+>>>>>>> 40c8ad9 (cd work req_args_len)
     if (path.compare("-") == 0) {
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
             strcpy(new_path,SmallShell::getInstance().old_path_stack.back().c_str());
@@ -341,6 +345,15 @@ void ChangeDirCommand::execute(){
         }
 	//printPaths();
     }
+<<<<<<< HEAD
+=======
+
+    else if (path.compare("..") == 0) {
+            int idx = old_path.find_last_of("/");
+            new_path = old_path.substr(0, idx);
+            old_path_stack.push_back(new_path);
+        }
+>>>>>>> 40c8ad9 (cd work req_args_len)
     else {
         strcpy(new_path, args[1]);
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
