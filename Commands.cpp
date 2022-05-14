@@ -333,10 +333,10 @@ static bool isNumber(const string& str)
 
 bool ForegroundCommand::validate(){
   if (args_len == 1){
-    req_id = JobsList::getMaxId();
+    req_id = JobsList::getInstance().getMaxId();
     if (req_id == 0){
       cerr << "smash error: fg: jobs list is empty" << endl;
-      return false
+      return false;
     }
     return true;
   }
@@ -422,8 +422,6 @@ void JobsCommand::execute(){
 }
 
 void KillCommand::execute(){}
-
-void ForegroundCommand::execute(){}
 
 void BackgroundCommand::execute(){}
 
