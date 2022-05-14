@@ -397,7 +397,7 @@ void TouchCommand::execute(){
 
     char* file_name = args[1];
     std::string raw_format_time = args[2];
-    struct tm* time = { 0 };
+    struct tm time = { 0 };
     std::string time_stamp[6];
     int i = 0;
 
@@ -408,19 +408,19 @@ void TouchCommand::execute(){
         ++i;
     }
     std::cout << 1 << "\n";
-    time->tm_sec = std::stoi(time_stamp[0]);
-    time->tm_min = std::stoi(time_stamp[1]);
-    time->tm_hour = std::stoi(time_stamp[2]);
-    time->tm_mday = std::stoi(time_stamp[3]);
-    time->tm_mon = std::stoi(time_stamp[4]);
-    time->tm_year = std::stoi(time_stamp[5]);
+    time.tm_sec = std::stoi(time_stamp[0]);
     std::cout << 2 << "\n";
-    time_t time_stamp_final = mktime(time);
+    time.tm_min = std::stoi(time_stamp[1]);
     std::cout << 3 << "\n";
-    struct utimbuf* time_buff;
+    time.tm_hour = std::stoi(time_stamp[2]);
     std::cout << 4 << "\n";
+    time.tm_mday = std::stoi(time_stamp[3]);
+    time.tm_mon = std::stoi(time_stamp[4]);
+    time.tm_year = std::stoi(time_stamp[5]);
+    
+    time_t time_stamp_final = mktime(time);
+    struct utimbuf* time_buff;
     time_buff->actime = time_stamp_final;
-
     if (utime(file_name, time_buff) == -1) {
         return;
     }
