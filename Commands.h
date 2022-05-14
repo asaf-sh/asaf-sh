@@ -147,6 +147,7 @@ public:
       time_t start_time;
       pid_t pid;
       Status status;
+      std::string jobStr(bool verbose);
       //bool is_fg
     public:
       JobEntry(Command* cmd, int job_id):job_id(job_id){

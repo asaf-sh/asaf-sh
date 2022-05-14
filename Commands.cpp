@@ -211,14 +211,19 @@ JobsList::JobEntry* JobsList::getJobById(int job_id){
   cmd->execute()
   fork
 }*/
-
+std::string JobsList::JobEntry::jobStr(bool verbose){
+  return (verbose ? "[" << job.job_id << "] " : "") << job.cmd_line <<  " : "  << job.pid\
+	    << (verbose ? " " << job.getElapsedTime() << " secs"  << (status == Status::stopped ? " (stopped)" : ""): "")\
+       << endl;
+}
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << "] " << job.cmd_line <<  " : "  << job.pid\
+  os << job.jobStr(true);
+    /*os << '[' << job.job_id << "] " << job.cmd_line <<  " : "  << job.pid\
 	    << ' ' << job.getElapsedTime() << " secs";
     if(job.status == Status::stopped){
       os << " (stopped)";
-    }
+    }*/
     return os;
 }
 char* SmallShell::DEFAULT_PROMPT = (char*) "smash";
