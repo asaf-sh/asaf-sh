@@ -306,6 +306,9 @@ bool ChangeDirCommand::validate(){
 }
 void ChangeDirCommand::execute(){
   if(!validate()){
+      if (chdir(args[1]) == -1) {
+          return; //TODO - error
+      }
     return;
   }
 
