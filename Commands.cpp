@@ -324,7 +324,7 @@ void ChangeDirCommand::execute(){
     char* new_path;
     if (path.compare("-") == 0) {
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
-            new_path = SmallShell::getInstance().old_path_stack[0];
+            new_path = SmallShell::getInstance().old_path_stack.back();
             //std::cout << SmallShell::getInstance().old_path_stack.size() << "\n";
             SmallShell::getInstance().old_path_stack.pop_back();
         }
@@ -332,12 +332,6 @@ void ChangeDirCommand::execute(){
             return; // TOTO - perror implement
         }
     }
-    else if (path.compare("..") == 0) {
-            int idx = old_path.find_last_of("/");
-            std::string old_path_trim = old_path.substr(0, idx);
-            new_path = strcpy(new char [old_path_trim.length() + 1], old_path_trim.c_str());
-            SmallShell::getInstance().old_path_stack.push_back(curr_path);
-        }
     else {
         new_path = args[1];
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
