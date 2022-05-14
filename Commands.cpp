@@ -342,6 +342,7 @@ void ChangeDirCommand::execute(){
     else {
         new_path = args[1];
         path_stack.push_back(curr_path);
+        std::cout << curr_path << "\n";
     }
   //prepare();
   if (chdir(new_path) == -1) {
