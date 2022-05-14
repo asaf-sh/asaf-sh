@@ -130,6 +130,7 @@ bool JobsList::JobEntry::cont(){
 //JobsList::JobEntry(Command* cmd, int job_id){};
 
 JobsList::JobEntry::~JobEntry(){
+	printf("in JE destructor, with pid=%d\n", getpid());
   if(cmd != nullptr){
 	  delete cmd;
   }
@@ -447,8 +448,7 @@ void SmallShell::executeCommand(const char *cmd_line) {
   if (isExternal){
 //    int new_id = JobsList::getInstance().getMaxId() + 1;
     JobsList::getInstance().addJob(cmd);
-    //executeExternal(cmd);
-    // deletion of cmd for fg job inside executeExteranl - consider changing because its FUGLY!
+    printf("finished add job:%s\n",cmd_line);
   }
   else{
     cmd->execute();
@@ -476,6 +476,7 @@ void JobsList::addJob(Command* cmd){
     cout << "starting job\t:" << *job2 << endl;
 //    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
+    printf("finished starting job\n");
   };
 
 void JobsList::JobEntry::start(){
@@ -489,6 +490,7 @@ void JobsList::JobEntry::start(){
 
     case 0: // in child process
       setpgrp();
+      printf("pid = %d\n",getpid());
       cout << *this << endl;
       cmd->execute();
       //this code is never reached, because cmd->execute calls exec
@@ -510,7 +512,10 @@ void JobsList::JobEntry::start(){
          stop();
         }
         else{ //assume only get here for terminated or killed child process/command
-          delete cmd;
+          /*cout << "deleting cmd" << endl;
+		delete cmd;
+		cout << "deleted cmd" << endl;*/
+
         }
       }
     break;

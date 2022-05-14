@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     //TODO: setup sig alarm handler
 
     SmallShell& smash = SmallShell::getInstance();
+    printf("pid = %d\n",getpid());
     while(true) {
         std::cout << smash.getPrompt() << "> ";
         std::string cmd_line;
@@ -23,6 +24,7 @@ int main(int argc, char* argv[]) {
 	if(cmd_line.compare("") != 0){
 	        smash.executeCommand(cmd_line.c_str());
 	}
+        printf("finished the cycle for (%s)\n", cmd_line.c_str());
     }
     return 0;
 }

@@ -64,7 +64,7 @@ private:
     char* args[COMMAND_MAX_ARGS+1];
  public:
   ExternalCommand(const char* cmd_line);
-  virtual ~ExternalCommand(){};
+  virtual ~ExternalCommand(){printf("in EC dtor\n");};
   void execute() override;
   //void inline setPid(pid_t pid) {pid = pid;}
   //pid_t inline getPid() const {return pid;}
