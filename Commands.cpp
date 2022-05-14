@@ -416,6 +416,8 @@ bool TouchCommand::validate() {
         return false;
     }
     return true;
+}
+
 
 void ExternalCommand::execute(){
   execv(BASH, args);
