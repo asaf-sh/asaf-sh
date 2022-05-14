@@ -384,17 +384,17 @@ void TailCommand::execute(){
     }
     char* file_name;
     if (args_len == 3) {
-        setNumOfRows(std::stoi(str(args[1]).substr(1)));
+        setNumOfRows(std::stoi(std::string(args[1]).substr(1)));
         file_name = args[2];
     }
     else {
         file_name = args[1];
     }
-    const int fd = open(file_name, O_RDONLY);
+    const int fd = open(file_name, 0);
     if (fd == -1) {
         return; //TOTO - PERROR
     }
-    ifstream file(file_name);
+    std::ifstream file(file_name);
     vector<std::string> rows_q;
     rows_q.resize(N);
     std::str temp_str;
@@ -491,8 +491,8 @@ void TailCommand::setNumOfRows(int num) {
 
 bool TailCommand::validate() {
     if (!validateArgsLen() || args_len != 3 ||\
-        (args_len == 3 && std::str(args[1])[0].compare("-") != 0) ||\
-        isnumber(std::str(args[1]).substr[1])) {
+        (args_len == 3 && std::string(args[1])[0].compare("-") != 0) ||\
+        isnumber(std::string(args[1]).substr[1])) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
