@@ -134,7 +134,7 @@ public:
   QuitCommand(const char* cmd_line);
   virtual ~QuitCommand() {}
   void execute() override;
-  //bool validate() override;
+  bool isKill();
 };
 
 enum class Status {running, stopped, killed, finished};
@@ -172,9 +172,8 @@ public:
       void start();
       void jobWait();
       std::string jobStr(bool verbose) const;
-      inline void killJob(){
-	  kill(pid, SIGKILL);
-      }
+      std::string jobShortStr() const;
+      void killJob(bool loud);
 
       void updateStatus();
 
@@ -199,7 +198,7 @@ public:
   void addJob(Command* cmd);
   void printJobsList();
   void printJobsListA(bool verbose);
-  void killAllJobs();
+  void killAllJobs(bool is_loud);
   void removeFinishedJobs();
   void updateAllJobsStatus();
   JobEntry* getJobById(int jobId);

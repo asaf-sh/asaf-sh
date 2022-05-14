@@ -163,13 +163,25 @@ void JobsList::removeJobById(int jobId){
   return;
 }
 
-void JobsList::killAllJobs(){
+void JobsList::killAllJobs(bool load){
+  if(load){
+    cout << "smash: sending SIGKILL signal to " << jobs_list.size() << " jobs:" << endl;
+    for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+      cout << itr->jobShortStr << endl;
+    }
+  }
+
   for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-    itr->killJob();
-}
-return;
+    itr->killJob(loud);
+  }
+  return;
 }
 
+void JobsList::JobEntry::killJob(bool loud){
+	if(kill(pid, SIGKILL) != 0 && loud){
+    perror("smash error: kill failed");
+  }
+}
 
 
 /*void JobsList::stopJobById(int jobId){
@@ -225,6 +237,10 @@ std::string JobsList::JobEntry::jobStr(bool verbose) const {
 		+ string(cmd_line) + " : " + to_string(pid)\
 		+ (verbose ? " " + to_string(getElapsedTime()) +  " secs" : "")\
 		+ (verbose && (status == Status::stopped) ? " (stopped)" : "");
+}
+
+std::string JobsList::JobEntry::jobShortStr() const {
+	return to_string(pid) + ": " + string(cmd_line);
 }
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
@@ -469,8 +485,20 @@ void BuiltInCommand::cleanup(){
 
 
 //void GetCurrDirCommand::execute(){}
-
-void QuitCommand::execute(){}
+bool QuitCommand::isKill(){
+  for (int i=1; i<args_len; ++i){
+    if(string(args[i]).compare("kill") == 0){
+      return true;
+    }
+  }
+  return false;
+}
+void QuitCommand::execute(){
+  if(isKill()){
+    JobsList::getInstance().killAllJobs(true);
+  }
+  exit(0);
+}
 
 void JobsCommand::execute(){
 	JobsList::getInstance().removeFinishedJobs();
@@ -740,7 +768,11 @@ void JobsList::addJob(Command* cmd){
 //    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
   //  printf("finished starting job\n");
-  };
+  }
+
+
+
+
 void JobsList::JobEntry::jobWait(){
   status = Status::running;
   int wstatus;
