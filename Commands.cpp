@@ -98,6 +98,10 @@ void GetCurrDirCommand::execute(){
   printf("%s\n",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
 }
 
+void JobsList::JobEntry::kill(){//TODO - REAL IMPLEMENT
+  return;
+}
+
 bool JobsList::JobEntry::stop(){
   if(status != Status::running || kill(pid, SIGTSTP) != 0){
     return false;
@@ -142,7 +146,7 @@ JobsList::JobEntry* JobsList::getLastStoppedJob(int jobId){
       }
     }
     return getJobById(max);
-  }
+}
 
 void JobsList::removeJobById(int jobId){
 	for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
@@ -163,6 +167,19 @@ return;
 
 
 /*void JobsList::stopJobById(int jobId){
+=======
+    //itr->kill();
+  return;
+}
+
+void JobsList::printJobsList(){
+  for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+    std::cout << *itr << std::endl;
+}
+
+
+void JobsList::stopJobById(int jobId){
+>>>>>>> 9959c1f (wip built ins)
   getJobById(jobId)->stop();
   return;
 }*/
