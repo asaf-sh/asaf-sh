@@ -98,9 +98,9 @@ void GetCurrDirCommand::execute(){
   printf("%s\n",getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
 }
 
-void JobsList::JobEntry::kill(){//TODO - REAL IMPLEMENT
+/*void JobsList::JobEntry::kill(){//TODO - REAL IMPLEMENT
   return;
-}
+}*/
 
 bool JobsList::JobEntry::stop(){
   if(status != Status::running || kill(pid, SIGTSTP) != 0){
