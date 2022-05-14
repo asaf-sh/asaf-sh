@@ -331,16 +331,13 @@ void ChangeDirCommand::execute(){
         return;
     }
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
-    getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
+    getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH));
 
     std::string path = args[1];
-    std::string old_path = curr_path;
-
-    char new_path[GetCurrDirCommand::MAX_PATH_LENGTH];
+    char* new_path;
     if (path.compare("-") == 0) {
-        if (SmallShell::getInstance().old_path_stack.size() > 0) {
-            strcpy(new_path,SmallShell::getInstance().old_path_stack.back().c_str());
-            SmallShell::getInstance().old_path_stack.pop_back();
+        if (old_path_stack.size()) {
+            new_path = old_path_stack.pop_back();
         }
         else {
             return; // TOTO - perror implement
