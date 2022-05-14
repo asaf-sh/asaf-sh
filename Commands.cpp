@@ -411,7 +411,7 @@ void TailCommand::execute(){
     rows_q.resize(N);
     std::string temp_str;
     while (getline(file, temp_str)) {
-        if (rows_q.size() == N) {
+        if ((signed int)rows_q.size() == N) {
             rows_q.erase(rows_q.begin());
         }
         rows_q.push_back(temp_str.substr(0));
@@ -485,7 +485,7 @@ static void initializeArr(char** arr, int len){
 	}
 }
 
-static bool isNumber(std::string& s){
+static bool isNumber(const std::string& s){
     int string_size = s.length();
     for (int i = 0; i < string_size; ++i) {
         if (!isdigit(s[i])) {
@@ -513,7 +513,7 @@ bool TailCommand::validate() {
     std::string validate_if_num = to_validate.substr(1);
     if (!validateArgsLen() || args_len != 3 ||\
         (args_len == 3 && to_validate.find_first_of("-") != 0) ||\
-        isNumber(&validate_if_num)) {
+        isNumber(validate_if_num)) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
