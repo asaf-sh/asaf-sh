@@ -408,7 +408,7 @@ void TailCommand::execute(){
     }
     file.close();
     for (auto itr = rows_q.begin(); itr != rows_q.end(); ++itr) {
-        std::cout << itr * << "\n";
+        std::cout << *itr << "\n";
     }
 }
 
@@ -476,6 +476,13 @@ static void initializeArr(char** arr, int len){
 	}
 }
 
+static bool is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
 BuiltInCommand::BuiltInCommand(const char* cmd_line) : Command(cmd_line){
   initializeArr(args, COMMAND_MAX_ARGS);
   char* cmd_line2 = (char*) cmd_line;
@@ -492,19 +499,14 @@ void TailCommand::setNumOfRows(int num) {
 bool TailCommand::validate() {
     if (!validateArgsLen() || args_len != 3 ||\
         (args_len == 3 && (std::string(args[1])[0]).compare("-") != 0) ||\
-        isnumber(std::string(args[1]).substr[1])) {
+        isnumber((std::string(args[1])).substr[1])) {
         std::cerr << "smash error: touch: invalid arguments \n";
         return false;
     }
     return true;
 }
 
-static bool is_number(const std::string& s)
-{
-    std::string::const_iterator it = s.begin();
-    while (it != s.end() && std::isdigit(*it)) ++it;
-    return !s.empty() && it == s.end();
-}
+
 
 ChangePromptCommand::ChangePromptCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 GetCurrDirCommand::GetCurrDirCommand(const char* cmd_line): BuiltInCommand(cmd_line){};
@@ -513,8 +515,9 @@ JobsCommand::JobsCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 KillCommand::KillCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ForegroundCommand::ForegroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 BackgroundCommand::BackgroundCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
-TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line), N(10){
-setReqArgsLen(2)};
+TailCommand::TailCommand(const char* cmd_line) : BuiltInCommand(cmd_line), N(10) {
+    setReqArgsLen(2);
+};
 TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){
     setReqArgsLen(3);
 };
