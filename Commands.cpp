@@ -93,13 +93,18 @@ static void badFork(){
  perror("smash error: fork failed");
 };
 
-Command::Command(const char* cmd_line) : cmd_line(cmd_line){};
-
+Command::Command(const char* cmd_line) : cmd_line(cmd_line){
+	getFgCommandLine(fg_cmd_line);
+}
+void Command::getFgCommandLine(char* fg_cmd_line){
+	strcpy(fg_cmd_line, cmd_line);
+	_removeBackgroundSign(fg_cmd_line);
+}
+	
 const int GetCurrDirCommand::MAX_PATH_LENGTH = 1024;
-
-void GetCurrDirCommand::execute() {
-    char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
-    printf("%s\n", getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH));
+void GetCurrDirCommand::execute(){
+  char path_buff[GetCurrDirCommand::MAX_PATH_LENGTH];
+  cout << getcwd(path_buff, GetCurrDirCommand::MAX_PATH_LENGTH) << endl;
 }
 
 /*void JobsList::JobEntry::kill(){//TODO - REAL IMPLEMENT
@@ -131,15 +136,7 @@ bool JobsList::JobEntry::cont(){
 //JobsList::JobEntry(Command* cmd, int job_id){};
 
 JobsList::JobEntry::~JobEntry(){
-  delete cmd;
-}
-
-void JobsList::removeFinishedJobs(){
-    for (auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
-      if (itr->getStatus() == Status::finished){
-        jobs_list.erase(itr);
-      }
-    }
+	//printf("in JE destructor, with pid=%d\n", getpid());
 }
 
 JobsList::JobEntry* JobsList::getLastStoppedJob(int jobId){
@@ -188,6 +185,13 @@ void JobsList::stopJobById(int jobId){
   return;
 }*/
 
+JobsList::JobEntry::JobEntry(const JobEntry &job){
+  job_id = job.job_id;
+  start_time = job.start_time;
+  status = job.status;
+  pid = job.pid;
+  strcpy(cmd_line, job.cmd_line);
+}
 JobsList::JobEntry* JobsList::getLastJob(int lastJobId){
   return getJobById(getMaxId());
 }
@@ -211,7 +215,7 @@ JobsList::JobEntry* JobsList::getJobById(int job_id){
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
 {
-    os << '[' << job.job_id << "] " << job.cmd->getCommandLine() <<  " : "  << job.pid\
+    os << '[' << job.job_id << "] " << job.cmd_line <<  " : "  << job.pid\
 	    << ' ' << job.getElapsedTime() << " secs";
     if(job.status == Status::stopped){
       os << " (stopped)";
@@ -243,8 +247,11 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
     return new RedirectionCommand(cmd_line);
   }
 
+  char fg_cmd_line[COMMAND_MAX_LENGTH];
+  strcpy(fg_cmd_line, cmd_line);
+  _removeBackgroundSign(fg_cmd_line);
 
-  string cmd_s = _trim(string(cmd_line));
+  string cmd_s = _trim(string(fg_cmd_line));
   string firstWord = cmd_s.substr(0, cmd_s.find_first_of(" \n"));
   
   if (firstWord.compare("pwd") == 0) {
@@ -312,27 +319,25 @@ bool ChangeDirCommand::validate(){
   }
   return true;
 }
+void printPaths(){
+	SmallShell &smash = SmallShell::getInstance();
+	for (auto itr = smash.old_path_stack.begin(); itr != smash.old_path_stack.end(); ++itr){
+		cout << *itr << endl;
+	}
+	cout << endl;
+}
 void ChangeDirCommand::execute(){
 //    printPaths();
 	if (!validate()) {
         return;
     }
-    std::cout << 1 << "\n";
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
-    std::cout << 2 << "\n";
+
     std::string path = args[1];
     std::string old_path = curr_path;
-<<<<<<< HEAD
-<<<<<<< HEAD
 
     char new_path[GetCurrDirCommand::MAX_PATH_LENGTH];
-=======
-=======
-    std::cout << 3 << "\n";
->>>>>>> e59d2c9 (cd work req_args_len)
-    char* new_path;
->>>>>>> 40c8ad9 (cd work req_args_len)
     if (path.compare("-") == 0) {
         if (SmallShell::getInstance().old_path_stack.size() > 0) {
             strcpy(new_path,SmallShell::getInstance().old_path_stack.back().c_str());
@@ -343,20 +348,6 @@ void ChangeDirCommand::execute(){
         }
 	//printPaths();
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-=======
->>>>>>> e59d2c9 (cd work req_args_len)
-    else if (path.compare("..") == 0) {
-            int idx = old_path.find_last_of("/");
-            std::cout << 4 << "\n";
-            strcpy(new_path, old_path.substr(0, idx).c_str());
-            std::cout << new_path;
-            old_path_stack.push_back(new_path);
-        }
->>>>>>> 40c8ad9 (cd work req_args_len)
     else {
         strcpy(new_path, args[1]);
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
@@ -387,7 +378,10 @@ void BuiltInCommand::cleanup(){
 
 void QuitCommand::execute(){}
 
-void JobsCommand::execute(){}
+void JobsCommand::execute(){
+	JobsList::getInstance().removeFinishedJobs();
+	JobsList::getInstance().printJobsList();
+}
 
 void KillCommand::execute(){}
 
@@ -468,6 +462,7 @@ bool TouchCommand::validate() {
     return true;
 }
 
+void TouchCommand::execute(){};
 
 void ExternalCommand::execute(){
   execv(BASH, args);
@@ -557,8 +552,6 @@ ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
 //JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 
-void JobsCommand::execute(){}
-
 void KillCommand::execute(){}
 
 void ForegroundCommand::execute(){}
@@ -577,14 +570,17 @@ void SmallShell::executeCommand(const char *cmd_line) {
   if (isExternal){
 //    int new_id = JobsList::getInstance().getMaxId() + 1;
     JobsList::getInstance().addJob(cmd);
-    //executeExternal(cmd);
-    // deletion of cmd for fg job inside executeExteranl - consider changing because its FUGLY!
+   // printf("finished add job:%s\n",cmd_line);
   }
   else{
     cmd->execute();
     delete cmd;
   }
 }
+bool JobsList::JobEntry::isFg(){
+        return !_isBackgroundComamnd(cmd_line);
+      }
+
 int JobsList::getMaxId(){
   if(jobs_list.empty()){
 	return 0;  
@@ -598,15 +594,55 @@ int JobsList::getMaxId(){
   }
   return max;
 }
+
+void JobsList::printJobsListA(bool verbose){
+  std::sort(jobs_list.begin(),jobs_list.end() , JobsList::compareJobs);
+  for(auto itr = jobs_list.begin(); itr != jobs_list.end(); ++itr){
+		cout << *itr << (verbose && itr->getStatus() == Status::running ? " (running)" : "") << endl;
+	}
+}
+
+void JobsList::removeFinishedJobs(){
+	updateAllJobsStatus();
+	jobs_list.erase(std::remove_if(jobs_list.begin(), jobs_list.end(), isFinished), jobs_list.end());
+}
+void JobsList::printJobsList(){
+	printJobsListA(false);
+}
+void JobsList::JobEntry::updateStatus(){
+	int wstatus;
+	if(waitpid(pid, &wstatus, WNOHANG) == 0){
+		return;
+	}
+	if(WIFEXITED(wstatus)){
+		status = Status::finished;
+	}
+	if(WIFSTOPPED(wstatus)){
+		status = Status::stopped;
+	}
+}
+
+void JobsList::updateAllJobsStatus(){
+	for (auto it=jobs_list.begin(); it != jobs_list.end(); ++it){
+		it->updateStatus();
+	}
+}
 void JobsList::addJob(Command* cmd){
-    int new_id = getMaxId();
+    removeFinishedJobs();
+    int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
+    delete cmd;
     jobs_list.push_back(job);
+    //JobEntry* job2 = getJobById(new_id);
+//    cout << "starting job\t:" << *job2 << endl;
+//    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
     getJobById(new_id)->start();
+  //  printf("finished starting job\n");
   };
 
 void JobsList::JobEntry::start(){
-	pid_t pid = fork();
+	pid = fork();
+	resetStartTime();
 	status = Status::running;
   switch(pid){
     case -1:
@@ -615,20 +651,40 @@ void JobsList::JobEntry::start(){
 
     case 0: // in child process
       setpgrp();
-      cmd->execute();
+      //printf("current process's pid = %d\n",getpid());
+      //cout << *this << endl;
+      char fg_cmd_line[COMMAND_MAX_LENGTH];
+      strcpy(fg_cmd_line, cmd_line);
+      _removeBackgroundSign(fg_cmd_line);
+      execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
+      //cmd->execute();
+      //this code is never reached, because cmd->execute calls exec
+      status = Status::finished;
+      //printf("finished execution in child proccess\n");
+      //cout << *this << endl;
     break;
 
     default: // in main process
-      resetStartTime();
-      bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
-      if(isFg){
+    	//sleep(1);
+    	//printf("in parent proccess after child started\n");
+      bool is_fg = !_isBackgroundComamnd(cmd_line);
+      if(is_fg){
+	//cout << *this << " is fg" << endl;
         int wstatus;
         waitpid(pid, &wstatus, 0);
-        if WIFSTOPPED(wstatus){
+	//printf("done waiting, with:status=%d\texited=%d\tstopped=%d\n",WEXITSTATUS(wstatus),WIFSIGNALED(wstatus),WIFSTOPPED(wstatus));
+        if(WIFEXITED(wstatus)){
+	status = Status::finished;
+	}
+
+	else if (WIFSTOPPED(wstatus)){
          stop();
         }
         else{ //assume only get here for terminated or killed child process/command
-          delete cmd;
+          /*cout << "deleting cmd" << endl;
+		delete cmd;
+		*///cout << "assuming job was terminated correctly" << endl;
+
         }
       }
     break;

@@ -2,11 +2,15 @@
 #define SMASH_COMMAND_H_
 
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 #include <string>
+#include <string.h>
 #include <time.h>
 #include <signal.h>
+#include <unistd.h>
 
+#define COMMAND_MAX_LENGTH (80)
 #define COMMAND_ARGS_MAX_LENGTH (200)
 #define COMMAND_MAX_ARGS (20)
 #define BASH ((char*) "/bin/bash")
@@ -14,9 +18,12 @@
 using namespace std;
 class Command {
 // TODO: Add your data members
-private:
+ private:	  
+  void getFgCommandLine(char* fg_command_line);
+ protected:
   const char* cmd_line;
   const char* cmd_name;
+  char fg_cmd_line[COMMAND_MAX_LENGTH];
  public:
   Command(const char* cmd_line);
   virtual ~Command(){};
@@ -59,7 +66,9 @@ private:
     char* args[COMMAND_MAX_ARGS+1];
  public:
   ExternalCommand(const char* cmd_line);
-  virtual ~ExternalCommand(){};
+  virtual ~ExternalCommand(){
+	  //printf("in EC dtor\n");
+  };
   void execute() override;
   //void inline setPid(pid_t pid) {pid = pid;}
   //pid_t inline getPid() const {return pid;}
@@ -133,16 +142,21 @@ class JobsList{
 public:
   class JobEntry {
     private:
-      Command* cmd;
+      char cmd_line[COMMAND_MAX_LENGTH];
       int job_id;
       time_t start_time;
       pid_t pid;
       Status status;
+      //bool is_fg
     public:
-      JobEntry(Command* cmd, int job_id): cmd(cmd), job_id(job_id){};
-      JobEntry(const JobEntry& job) = default; 
+      JobEntry(Command* cmd, int job_id):job_id(job_id){
+        //is_fg = !_isBackgroundComamnd(cmd->getCommandLine());
+	strcpy(cmd_line, cmd->getCommandLine());
+        //_removeBackgroundSign(fg_cmd_line);
+      };
+      JobEntry(const JobsList::JobEntry &job); 
       ~JobEntry();
-      
+      bool isFg();
       inline Status getStatus(){
         return status;
       }
@@ -155,6 +169,8 @@ public:
       inline void killJob(){
 	  kill(pid, SIGKILL);
       }
+
+      void updateStatus();
 
       inline void resetStartTime(){
 	      start_time = time(NULL);
@@ -176,8 +192,10 @@ public:
   ~JobsList(){};
   void addJob(Command* cmd);
   void printJobsList();
+  void printJobsListA(bool verbose);
   void killAllJobs();
   void removeFinishedJobs();
+  void updateAllJobsStatus();
   JobEntry* getJobById(int jobId);
   void stopJobById(int id);
   void removeJobById(int jobId);
@@ -192,6 +210,13 @@ public:
   }
   int getMaxId();
 private:
+    bool static compareJobs(JobEntry& j1, JobEntry& j2){
+        return j1.getId() < j2.getId();
+    }
+    bool static isFinished(JobEntry& job){
+    	return job.getStatus() == Status::finished;
+    }
+
     static const int MAX_JOBS = 100;
     std::vector <JobsList::JobEntry> jobs_list;
 
