@@ -169,7 +169,7 @@ public:
       }
       bool stop();
       bool cont();
-      void start();
+      void start(Command *cmd);
       void jobWait();
       std::string jobStr(bool verbose) const;
       std::string jobShortStr() const;

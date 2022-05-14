@@ -224,11 +224,6 @@ JobsList::JobEntry* JobsList::getJobById(int job_id){
     return nullptr; //TODO - ERROR 
 }
 
-/*bool JobsList::JobEntry::start(){
-  cmd->prepare()  //consider putting in execute (but remember they've put it under "public")
-  cmd->execute()
-  fork
-}*/
 
 
 
@@ -623,8 +618,10 @@ void ExternalCommand::execute(){
 	  cout << execv_arr[i] << " ";
   }
   cout << endl;*/
-  sleep(2);
-  execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
+  char fg_cmd_line[COMMAND_MAX_LENGTH];
+      strcpy(fg_cmd_line, cmd_line);
+      _removeBackgroundSign(fg_cmd_line);
+      execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
   }
 
 void PipeCommand::execute(){};
@@ -761,12 +758,12 @@ void JobsList::addJob(Command* cmd){
     removeFinishedJobs();
     int new_id = getMaxId() + 1;
     JobEntry job = JobEntry(cmd, new_id);
-    delete cmd;
     jobs_list.push_back(job);
     //JobEntry* job2 = getJobById(new_id);
 //    cout << "starting job\t:" << *job2 << endl;
 //    printf("starting job\tid=%d\t:cmd_line=%s\n",job2->getId(), job2->cmd->getCommandLine());
-    getJobById(new_id)->start();
+    getJobById(new_id)->start(cmd);
+    delete cmd;
   //  printf("finished starting job\n");
   }
 
@@ -788,7 +785,7 @@ void JobsList::JobEntry::jobWait(){
     ;
   };
 }
-void JobsList::JobEntry::start(){
+void JobsList::JobEntry::start(Command* cmd){
 	pid = fork();
 	resetStartTime();
 	status = Status::running;
@@ -801,10 +798,8 @@ void JobsList::JobEntry::start(){
       setpgrp();
       //printf("current process's pid = %d\n",getpid());
       //cout << *this << endl;
-      char fg_cmd_line[COMMAND_MAX_LENGTH];
-      strcpy(fg_cmd_line, cmd_line);
-      _removeBackgroundSign(fg_cmd_line);
-      execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
+      cmd->execute();
+      
       //cmd->execute();
       //this code is never reached, because cmd->execute calls exec
       status = Status::finished;
