@@ -76,9 +76,13 @@ private:
 
 class PipeCommand : public Command {
  private:
+ Command* cmd_read;
+ Command* cmd_write;
+ int write_channel;
+ int separatePipe();
  public:
   PipeCommand(const char* cmd_line);
-  virtual ~PipeCommand(){};
+  virtual ~PipeCommand();
   void execute() override;
 };
 

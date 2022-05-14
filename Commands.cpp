@@ -624,7 +624,44 @@ void ExternalCommand::execute(){
       execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
   }
 
-void PipeCommand::execute(){};
+void PipeCommand::closePipe(int p[2]){
+  close(p[0]);
+  close(p[1]);
+}
+
+void PipeCommand::setWriteSide(int p[2]){
+  close(write_channel);
+  dup(p[1]);
+  close_pipe(p);
+}
+
+void PipeCommand::setReadSide(int p[2]){
+  close(0);
+  dup(p[0]);
+  close_pipe(p);
+}
+
+void PipeCommand::execute(){
+  int p[2];
+  if(pipe(p) == -1){
+    perror("smash error: pipe failed");
+  }
+  pid_t cp = fork();
+  switch(cp){
+    case -1:
+      badFork();
+      break;
+    case 0:
+      setWriteSide();
+      cmd_write.execute();
+      break;
+    default:
+      setReadSide();
+      cmd_read.execute();
+      wait(NULL);
+      break;
+  }
+};
 
 void RedirectionCommand::execute(){};
 
@@ -669,7 +706,14 @@ ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_li
     setReqArgsLen(2);
 };
 
-PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
+PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){
+  string cmd_str = string(cmd_line);
+  int sep = cmd_str.find('|');
+  bool is_err_pipe = cmd_str.find('|&') != string::npos;
+  write_channel = (is_err_pipe ? 2 : 1);
+  cmd_write = SmallShell::getInstance().CreateCommand(cmd_str.substr(0,sep));
+  cmd_read = SmallShell::getInstance().CreateCommand(cmd_str.substr(sep+is_err_pipe));
+  }
 RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
 
 ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
@@ -680,7 +724,10 @@ ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
   _parseCommandLine(cmd_line2, &args[1]);*/
 };
 
-//Command::~Command(){};
+virtual PipeCommand::~PipeCommand(){
+  delete cmd_write;
+  delete cmd_read;
+};
 //JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 
