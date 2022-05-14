@@ -315,7 +315,7 @@ void ChangeDirCommand::execute(){
     if (!validate()) {
         return;
     }
-    std::vector<char*> path_stack = ChangeDirCommand::old_path_stack;
+    std::vector<char*> path_stack = SmallShell::getInstance().old_path_stack;
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
 
@@ -424,7 +424,6 @@ TouchCommand::TouchCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ShowPidCommand::ShowPidCommand(const char* cmd_line) : BuiltInCommand(cmd_line){};
 ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_line) {
     setReqArgsLen(2);
-    old_path_stack.push_back("0");
 };
 
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){};
