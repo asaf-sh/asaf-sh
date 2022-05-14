@@ -268,6 +268,7 @@ class TouchCommand : public BuiltInCommand {
   TouchCommand(const char* cmd_line);
   virtual ~TouchCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 
