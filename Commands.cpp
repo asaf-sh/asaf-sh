@@ -341,8 +341,12 @@ void KillCommand::execute(){
       cerr << "smash error: kill: job-id " << req_id << " does not exist" << endl;
     }
     else{
-      if(kill(job->getPid(), req_sig) == -1){
-        perror("smash error: kill failed");
+      int ret = kill(job->getPid(), req_sig);
+      if (ret == 0){
+        cout << "signal number " << req_sig << " was sent to pid " << job->getPid() << endl;
+      }
+      else{
+	perror("smash error: kill failed");
       }
     }
   }
