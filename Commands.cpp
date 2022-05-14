@@ -8,7 +8,7 @@
 #include "Commands.h"
 #include <time.h>
 #include <utime.h>
-#include <wordwexp.h>
+#include <wordexp.h>
 
 
 using namespace std;
@@ -324,13 +324,7 @@ void ChangeDirCommand::execute(){
   }
   //prepare();
   wordexp_t we;
-  if (std::string(args[1]).compare("-") == 0) {
-      wordexp(args[1], &we, 0)
-  }
-  else {
-      we = args [1]
-  }
-  
+  wordexp(args[1], &we, 0);
   if (chdir(we) == -1) {
       return; // TOTO - perrror implementation
   };
