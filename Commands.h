@@ -167,6 +167,7 @@ public:
       bool stop();
       bool cont();
       void start();
+      void jobWait();
       inline void killJob(){
 	  kill(pid, SIGKILL);
       }
@@ -243,10 +244,13 @@ class KillCommand : public BuiltInCommand {
 
 class ForegroundCommand : public BuiltInCommand {
  // TODO: Add your data members
+ private:
+  int req_id;
  public:
   ForegroundCommand(const char* cmd_line);
   virtual ~ForegroundCommand() {}
   void execute() override;
+  bool validate() override;
 };
 
 class BackgroundCommand : public BuiltInCommand {
