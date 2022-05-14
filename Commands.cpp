@@ -426,6 +426,8 @@ bool TouchCommand::validate() {
         return false;
     }
     return true;
+}
+
 
 void ExternalCommand::execute(){
   //printf("in External::execute\n");
