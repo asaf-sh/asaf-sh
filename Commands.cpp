@@ -387,7 +387,7 @@ void TouchCommand::execute(){
     char* file_name = args[1];
     std::string raw_format_time = args[2];
     struct tm* time = { 0 };
-    std::string* time_stamp[6];
+    std::string time_stamp[6];
     int i = 0;
     while (raw_format_time.length()){
         int idx = raw_format_time.find_first_of(":");
