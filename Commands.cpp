@@ -322,7 +322,6 @@ void ChangeDirCommand::execute(){
     if (!validate()) {
         return;
     }
-    std::vector<char*> path_stack = SmallShell::getInstance().old_path_stack;
     char curr_path[GetCurrDirCommand::MAX_PATH_LENGTH];
     getcwd(curr_path, GetCurrDirCommand::MAX_PATH_LENGTH);
 
@@ -349,6 +348,7 @@ void ChangeDirCommand::execute(){
     else {
         new_path = args[1];
         SmallShell::getInstance().old_path_stack.push_back(curr_path);
+        std::cout << SmallShell::getInstance().old_path_stack[0] << "\n";
     }
   //prepare();
   if (chdir(new_path) == -1) {
