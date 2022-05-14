@@ -103,6 +103,8 @@ class ChangeDirCommand : public BuiltInCommand {
 };
 
 class GetCurrDirCommand : public BuiltInCommand {
+ private:
+     std::vector<char*> old_path_stack;
  public:
   GetCurrDirCommand(const char* cmd_line);
   virtual ~GetCurrDirCommand() {}
