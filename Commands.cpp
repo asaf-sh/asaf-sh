@@ -319,12 +319,15 @@ void ShowPidCommand::execute(){
 }
 
 void ForegroundCommand::execute(){
-  validate();
+  if(validate()){
   JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
-  if(job == nullptr){
-    cerr << "smash error: fg: jobs-id " << req_id << " does not exist" << endl;
+  if(job != nullptr){
+    job->jobWait();
   }
-  job->jobWait();
+  else{
+    cerr << "smash error: fg: job-id " << req_id << " does not exist" << endl;
+  }
+  }
 }
 
 static bool isNumber(const string& str)
