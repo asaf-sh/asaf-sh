@@ -141,16 +141,23 @@ class JobsList{
 public:
   class JobEntry {
     private:
-      Command* cmd;
+      char cmd_line[COMMAND_MAX_LENGTH];
       int job_id;
       time_t start_time;
       pid_t pid;
       Status status;
+      //bool is_fg
     public:
-      JobEntry(Command* cmd, int job_id): cmd(cmd), job_id(job_id){};
-      JobEntry(const JobEntry& job) = default; 
+      JobEntry(Command* cmd, int job_id): cmd(cmd), job_id(job_id){
+        //is_fg = !_isBackgroundComamnd(cmd->getCommandLine());
+        strcpy(cmd_line, cmd->getCommandLine());
+        //_removeBackgroundSign(fg_cmd_line);
+      };
+      JobEntry(const JobEntry& job); 
       ~JobEntry();
-      
+      inline isFg() const {
+        return is_fg;
+      }
       inline Status getStatus(){
         return status;
       }
@@ -199,6 +206,7 @@ public:
     return instance;
   }
   int getMaxId();
+  void cleanup(){};
 private:
     static const int MAX_JOBS = 100;
     std::vector <JobsList::JobEntry> jobs_list;

@@ -131,9 +131,6 @@ bool JobsList::JobEntry::cont(){
 
 JobsList::JobEntry::~JobEntry(){
 	printf("in JE destructor, with pid=%d\n", getpid());
-  if(cmd != nullptr){
-	  delete cmd;
-  }
 }
 
 void JobsList::removeFinishedJobs(){
@@ -177,6 +174,13 @@ return;
   return;
 }*/
 
+JobsList::JobEntry(const JobEntry& job){
+  job_id = job.is_id;
+  start_time = job.start_time;
+  status = job.status;
+  pid = job.pid;
+  strcpy(fg_cmd_line, job.fg_cmd_line);
+}
 JobsList::JobEntry* JobsList::getLastJob(int lastJobId){
   return getJobById(getMaxId());
 }
@@ -469,8 +473,10 @@ int JobsList::getMaxId(){
   return max;
 }
 void JobsList::addJob(Command* cmd){
+    cleanup();
     int new_id = getMaxId();
     JobEntry job = JobEntry(cmd, new_id);
+    delete cmd;
     jobs_list.push_back(job);
     JobEntry* job2 = getJobById(new_id);
     cout << "starting job\t:" << *job2 << endl;
@@ -480,7 +486,7 @@ void JobsList::addJob(Command* cmd){
   };
 
 void JobsList::JobEntry::start(){
-	pid_t pid = fork();
+	pid = fork();
 	resetStartTime();
 	status = Status::running;
   switch(pid){
@@ -490,9 +496,10 @@ void JobsList::JobEntry::start(){
 
     case 0: // in child process
       setpgrp();
-      printf("pid = %d\n",getpid());
+      printf("current process's pid = %d\n",getpid());
       cout << *this << endl;
-      cmd->execute();
+      execl(BASH,BASH, "-c", fg_cmd_line, (char*) NULL);
+      //cmd->execute();
       //this code is never reached, because cmd->execute calls exec
       status = Status::finished;
       printf("finished execution in child proccess\n");
@@ -502,8 +509,8 @@ void JobsList::JobEntry::start(){
     default: // in main process
     	sleep(1);
     	printf("in parent proccess after child started\n");
-      bool isFg = !_isBackgroundComamnd(cmd->getCommandLine());
-      if(isFg){
+      bool is_fg = !_isBackgroundComamnd(cmd_line);
+      if(is_fg){
 	cout << *this << " is fg" << endl;
         int wstatus;
         waitpid(pid, &wstatus, 0);
@@ -514,7 +521,7 @@ void JobsList::JobEntry::start(){
         else{ //assume only get here for terminated or killed child process/command
           /*cout << "deleting cmd" << endl;
 		delete cmd;
-		cout << "deleted cmd" << endl;*/
+		*/cout << "assuming job was terminated correctly" << endl;
 
         }
       }
