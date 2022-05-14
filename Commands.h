@@ -243,7 +243,7 @@ class KillCommand : public BuiltInCommand {
   KillCommand(const char* cmd_line);
   virtual ~KillCommand() {}
   void execute() override;
-  //bool validate() override;
+  bool validate() override;
 };
 
 class ForegroundCommand : public BuiltInCommand {

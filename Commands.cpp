@@ -224,7 +224,7 @@ std::string JobsList::JobEntry::jobStr(bool verbose) const {
 	return (verbose ? "[" + to_string(job_id) + "] " : "") \
 		+ string(cmd_line) + " : " + to_string(pid)\
 		+ (verbose ? " " + to_string(getElapsedTime()) +  " secs" : "")\
-		+ (verbose && status == Status::stopped ? " (stopped)" : "");
+		+ (verbose && (status == Status::stopped) ? " (stopped)" : "");
 }
 
 ostream& operator<<(ostream& os, const JobsList::JobEntry& job)
@@ -295,6 +295,9 @@ Command * SmallShell::CreateCommand(const char* cmd_line, bool* isExternal) {
   else if (firstWord.compare("touch") == 0) {
     return new TouchCommand(cmd_line);
   }
+  else if (firstWord.compare("kill") == 0) {
+    return new KillCommand(cmd_line);
+  }
 
   else {
     *isExternal = true;
@@ -322,17 +325,17 @@ void ChangePromptCommand::execute(){
 void ShowPidCommand::execute(){
   std::cout << getpid() << endl;
 }
-void KillCommand::validate(){
-  return args_len == 3 && args[1].at(0) == '-' && isNumber(args[1].substr(1)) && isNumber(args[2])
+bool KillCommand::validate(){
+  return (args_len == 3) && (string(args[1]).at(0)  == '-') && (isNumber(string(args[1]).substr(1))) && (isNumber(args[2]));
 }
 void KillCommand::execute(){
   if (!validate()){
-    cerr << "smash error: kill: invalid arguments";
+    cerr << "smash error: kill: invalid arguments" << endl;
   }
 
   else{
-    int req_sig = stoi(args[1]);
-    int req_id = soti(args[2]);
+    int req_sig = stoi(string(args[1]).substr(1));
+    int req_id = stoi(args[2]);
     JobsList::JobEntry* job = JobsList::getInstance().getJobById(req_id);
     if(job == nullptr){
       cerr << "smash error: kill: job-id " << req_id << " does not exist" << endl;
@@ -469,8 +472,6 @@ void JobsCommand::execute(){
 	JobsList::getInstance().removeFinishedJobs();
 	JobsList::getInstance().printJobsList();
 }
-
-void KillCommand::execute(){}
 
 /*static bool isNumber(const std::string& s)
 {
@@ -654,8 +655,6 @@ ExternalCommand::ExternalCommand(const char* cmd_line) : Command(cmd_line){
 //JobsList::JobEntry::~JobEntry(){};
 /*void QuitCommand::execute(){}
 
-void KillCommand::execute(){}
-
 void TailCommand::execute(){}
 
 void TouchCommand::execute(){}
@@ -663,7 +662,7 @@ void TouchCommand::execute(){}
 
 
 void SmallShell::executeCommand(const char *cmd_line) {
-  JobsList::getInstance().updateAllJobsStatus();
+  JobsList::getInstance().removeFinishedJobs();
   bool isExternal = false;
   Command* cmd = CreateCommand(cmd_line, &isExternal);
   if (isExternal){
@@ -713,7 +712,7 @@ void JobsList::JobEntry::updateStatus(){
 	if(waitpid(pid, &wstatus, WNOHANG) == 0){
 		return;
 	}
-	if(WIFEXITED(wstatus)){
+	if(WIFEXITED(wstatus) || WIFSIGNALED(wstatus)){
 		status = Status::finished;
 	}
 	if(WIFSTOPPED(wstatus)){
