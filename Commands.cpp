@@ -399,11 +399,12 @@ void TouchCommand::execute(){
     struct tm* time = { 0 };
     std::string time_stamp[6];
     int i = 0;
-    while (raw_format_time.length() && i < 5) {
+    while (raw_format_time.length() && i < 6) {
         unsigned int idx = raw_format_time.find_first_of(":");
         time_stamp[i] = raw_format_time.substr(0, idx);
         std::cout << raw_format_time.substr(0, idx) << "\n";
         raw_format_time = raw_format_time.substr(idx + 1);
+        std::cout << "hi" << "\n";
         ++i;
     }
     struct utimbuf* time_buff;
