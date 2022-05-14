@@ -333,6 +333,7 @@ void ChangeDirCommand::execute(){
     if (path.compare("-") == 0) {
         if (path_stack.size()) {
             new_path = path_stack.back();
+            std::cout << new_path << "\n";
             path_stack.pop_back();
         }
         else {
