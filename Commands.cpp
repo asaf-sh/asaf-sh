@@ -313,14 +313,20 @@ void ChangeDirCommand::execute(){
     return;
   }
   //prepare();
-  if (chdir(args[1]) == -1) {
+  wordexp_t we;
+  if (args[1].compare("-") == 0) {
+      wordexp(args[1], &we, WRDE_NOCMD)
+  }
+  else {
+      we = args [1]
+  }
+  
+  if (chdir(we) == -1) {
       return; // TOTO - perrror implementation
   };
   //cleanup();
 }
 bool BuiltInCommand::validateArgsLen(){
-    std::cout << args_len << "\n";
-    std::cout << req_args_len << "\n";
   return args_len == req_args_len;
 }
 
