@@ -520,7 +520,7 @@ bool TailCommand::validate() {
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
-    if(!isNumber(validate_if_num)) {
+    if(isNumber(validate_if_num)) {
         std::cout << "3rd if failed \n";
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
