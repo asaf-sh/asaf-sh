@@ -312,13 +312,6 @@ bool ChangeDirCommand::validate(){
   }
   return true;
 }
-void printPaths(){
-	SmallShell &smash = SmallShell::getInstance();
-	for (auto itr = smash.old_path_stack.begin(); itr != smash.old_path_stack.end(); ++itr){
-		cout << *itr << endl;
-	}
-	cout << endl;
-}
 void ChangeDirCommand::execute(){
 //    printPaths();
 	if (!validate()) {
@@ -350,7 +343,7 @@ void ChangeDirCommand::execute(){
 
     else if (path.compare("..") == 0) {
             int idx = old_path.find_last_of("/");
-            new_path = old_path.substr(0, idx);
+            strcpy(new_path*, old_path.substr(0, idx));
             old_path_stack.push_back(new_path);
         }
 >>>>>>> 40c8ad9 (cd work req_args_len)
