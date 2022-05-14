@@ -338,7 +338,7 @@ void ChangeDirCommand::execute(){
     }
     else if (path.compare("..") == 0) {
             int idx = old_path.find_last_of("/");
-            strcpy(*new_path[old_path.size()], old_path.substr(0, idx).c_str());
+            strcpy(new_path[str.length() + 1], old_path.substr(0, idx).c_str());
             std::cout << new_path;
             old_path_stack.push_back(new_path);
         }
