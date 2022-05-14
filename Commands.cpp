@@ -529,7 +529,7 @@ void RedirectionCommand::execute() {
         mode = "a";
     }
     freopen(output_file, "w", std::cout);
-    SmallShell::getInstance().executeCommand(args[1]);
+    SmallShell::getInstance().executeCommand(command);
     freopen(std::cout, "w", output_file);
 }
 
