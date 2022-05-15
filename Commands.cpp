@@ -424,15 +424,14 @@ bool ChangeDirCommand::validate(){
   }
   return true;
 }
-void printPaths(){
+/*void printPaths(){
 	SmallShell &smash = SmallShell::getInstance();
 	for (auto itr = smash.old_path_stack.begin(); itr != smash.old_path_stack.end(); ++itr){
 		cout << *itr << endl;
 	}
 	cout << endl;
-}
+}*/
 void ChangeDirCommand::execute(){
-//    printPaths();
 	if (!validate()) {
         return;
     }
@@ -451,7 +450,6 @@ void ChangeDirCommand::execute(){
         else {
             return; // TOTO - perror implement
         }
-	//printPaths();
     }
     else {
         strcpy(new_path, args[1]);
@@ -612,12 +610,6 @@ bool TouchCommand::validate() {
 
 
 void ExternalCommand::execute(){
-  //printf("in External::execute\n");
-  /*char* execv_arr[] = {BASH, (char*) "-c", fg_cmd_line};
-  for(int i=0; i<3;++i){
-	  cout << execv_arr[i] << " ";
-  }
-  cout << endl;*/
   char fg_cmd_line[COMMAND_MAX_LENGTH];
       strcpy(fg_cmd_line, cmd_line);
       _removeBackgroundSign(fg_cmd_line);
@@ -642,9 +634,6 @@ void PipeCommand::setReadSide(int p[2]){
 }
 
 void PipeCommand::execute(){
-	cout << "in PipeComand ! with"\
-		<< "C1=" << cmd_write->getCommandLine()\
-		<< " and C2=" << cmd_read->getCommandLine() << endl;
   int p[2];
   if(pipe(p) == -1){
     perror("smash error: pipe failed");
@@ -670,24 +659,6 @@ void PipeCommand::execute(){
     wait(NULL);
     wait(NULL);
   }
-/*
-  }
-    case -1:
-      badFork();
-      break;
-    case 0:
-      setWriteSide(p);
-      cmd_write->execute();
-      break;
-    default:
-      
-      setReadSide(p);
-      cmd_read->execute();
-      wait(NULL);
-      break;
-  }*/
-
-  cout << "finised execution" << endl;
 }
 
 void RedirectionCommand::execute(){};
@@ -734,7 +705,6 @@ ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_li
 };
 
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){
-  cout << "in Pipe Ctor with cmd: " << cmd_line << endl;
   string cmd_str = string(cmd_line);
   int sep = cmd_str.find('|');
   bool is_err_pipe = (cmd_str.find("|&") != string::npos);
