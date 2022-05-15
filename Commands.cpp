@@ -575,10 +575,8 @@ void TailCommand::execute() {
     }
     file.close();
     for (auto itr = rows_q.begin(); itr != rows_q.end(); ++itr) {
-        if (*itr){
-            std::cout << *itr << "\n";
-        }
-        }
+        std::cout << *itr << "\n";
+    }
 }
 
 void TouchCommand::execute(){
