@@ -696,6 +696,7 @@ void RedirectionCommand::execute() {
     }
         const char* cmd_format = command.c_str();
         SmallShell::getInstance().executeCommand(cmd_format);
+        std::cout << "here" << "\n";
         std::cout.rdbuf(oldbuf);
 }
 
