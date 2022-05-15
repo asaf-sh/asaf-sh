@@ -92,6 +92,9 @@ void _removeBackgroundSign(char* cmd_line) {
 static void badFork(){
  perror("smash error: fork failed");
 };
+static void badKill(){
+ perror("smash error: kill failed");
+};
 
 static bool isNumber(const string& str)
 {
@@ -117,8 +120,11 @@ void GetCurrDirCommand::execute(){
 }*/
 
 bool JobsList::JobEntry::stop(){
-  if(status != Status::running || kill(pid, SIGTSTP) != 0){
+  if(status != Status::running){
     return false;
+  }
+  else if(kill(pid, SIGTSTP) < 0){
+    badKill();
   }
   else{
     status = Status::stopped;
@@ -128,8 +134,11 @@ bool JobsList::JobEntry::stop(){
 }
 
 bool JobsList::JobEntry::cont(){
-  if(status != Status::stopped || kill(pid, SIGCONT) != 0){
+  if(status != Status::stopped){
     return false;
+  }
+  else if (kill(pid, SIGCONT) != 0){
+    badKill();
   }
   else{
     status = Status::running;
@@ -179,7 +188,7 @@ void JobsList::killAllJobs(bool loud){
 
 void JobsList::JobEntry::killJob(bool loud){
 	if(kill(pid, SIGKILL) != 0 && loud){
-    perror("smash error: kill failed");
+    badKill()
   }
 }
 
@@ -357,7 +366,7 @@ void KillCommand::execute(){
         cout << "signal number " << req_sig << " was sent to pid " << job->getPid() << endl;
       }
       else{
-	perror("smash error: kill failed");
+	badKill()
       }
     }
   }
@@ -821,9 +830,11 @@ void JobsList::addJob(Command* cmd){
 
 
 void JobsList::JobEntry::jobWait(){
+  JobsList::getInstance().setFg(job_id);
   status = Status::running;
   int wstatus;
   waitpid(pid, &wstatus, 0);
+  JobsList::getInstance().resetFg(job_id);
   if(WIFEXITED(wstatus)){
 	  status = Status::finished;
 	}

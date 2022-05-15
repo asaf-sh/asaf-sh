@@ -223,7 +223,31 @@ public:
     return instance;
   }
   int getMaxId();
+  bool setFg(int job_id){
+    JobEntry* j = getJobById(job_id);
+    if(j == nullptr){
+      return false;
+    }
+    else{
+      fg = j;
+      return true;
+    }
+  }
+
+  bool resetFg(int job_id){
+    if (fg->getId() != job_id){
+      return false;
+    }
+    else{
+      fg = nullptr;
+      return true;
+    }
+  }
+  JobEntry* getFg(){
+    return fg;
+  }
 private:
+    JobEntry* fg;
     bool static compareJobs(JobEntry& j1, JobEntry& j2){
         return j1.getId() < j2.getId();
     }
