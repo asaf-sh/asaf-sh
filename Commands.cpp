@@ -687,6 +687,7 @@ void RedirectionCommand::execute() {
         std::ofstream ofile(output_file, fstream::app);
     }
     else {
+        std::cout << output_file << "\n";
         std::ofstream ofile(output_file);
         std::streambuf* oldbuf = std::cout.rdbuf();
         std::cout.rdbuf(ofile.rdbuf());
@@ -695,7 +696,7 @@ void RedirectionCommand::execute() {
         std::cout << cmd_format << "\n";
         SmallShell::getInstance().executeCommand(cmd_format);
         std::cout.rdbuf(oldbuf);
-        std::cout << cmd_format << "\n";
+        //std::cout << cmd_format << "\n";
     }
 }
 
