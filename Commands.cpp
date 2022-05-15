@@ -675,25 +675,29 @@ void PipeCommand::execute(){
 }
 
 void RedirectionCommand::execute() {
-    char* cmd_ptr;
-    strcpy(cmd_ptr, cmd_line);
-    std::string cmd_str = cmd_ptr;
+    //char* cmd_ptr;
+    //strcpy(cmd_ptr, cmd_line);
+    std::string cmd_str = cmd_line;
+    std::cout << 1 << "\n";
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
+    std::cout << 2 << "\n";
     std::string command = cmd_str.substr(0, first_redirect_sign);
+    std::cout << 3 << "\n";
     std::string output_file = cmd_str.substr(last_redirect_sign + 1);
-
+    std::cout << 4 << "\n";
     std::ofstream ofile;
+    std::cout << 5 << "\n";
     if (first_redirect_sign != last_redirect_sign) {
         ofile.open(output_file, fstream::app);
     }
     else {
         ofile.open(output_file);
     }
+    std::cout << 6 << "\n";
     std::streambuf* oldbuf = std::cout.rdbuf();
     std::cout.rdbuf(ofile.rdbuf());
-    char* cmd_format;
-    strcpy(cmd_format, command.c_str());
+    char* cmd_format = command.c_str();
     SmallShell::getInstance().executeCommand(cmd_format);
     std::cout.rdbuf(oldbuf);
 }
