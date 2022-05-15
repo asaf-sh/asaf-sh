@@ -97,7 +97,6 @@ class RedirectionCommand : public Command {
   explicit RedirectionCommand(const char* cmd_line);
   virtual ~RedirectionCommand(){};
   void execute() override;
-  bool validate() override;
   //void prepare() override;
   //void cleanup() override;
 };
