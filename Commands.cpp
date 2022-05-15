@@ -531,16 +531,19 @@ bool TailCommand::validate()
     std::string validate_if_num = to_validate.substr(1);
     if (!validateArgsLen() && args_len != 3)
     {
+        std::cout << 1 << "\n";
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
     if ((args_len == 3 && to_validate.find_first_of("-") != 0))
     {
+        std::cout << 2 << "\n";
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
     if (isNumber(validate_if_num))
     {
+        std::cout << 3 << "\n";
         std::cerr << "smash error: tail: invalid arguments \n";
         return false;
     }
