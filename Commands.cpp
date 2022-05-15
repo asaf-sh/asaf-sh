@@ -680,8 +680,9 @@ void RedirectionCommand::execute() {
     std::string cmd_str = cmd_line;
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
+    int start_of_file_idx = cmd_str.find_last_of(WHITESPACE);
     std::string command = cmd_str.substr(0, first_redirect_sign);
-    std::string output_file = cmd_str.substr(last_redirect_sign + 1);
+    std::string output_file = cmd_str.substr(start_of_file_idx + 1);
     //std::ofstream ofile(output_file, fstream::app);
     if (first_redirect_sign != last_redirect_sign) {
         std::ofstream ofile(output_file, fstream::app);
