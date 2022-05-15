@@ -678,29 +678,25 @@ void RedirectionCommand::execute() {
     //char* cmd_ptr;
     //strcpy(cmd_ptr, cmd_line);
     std::string cmd_str = cmd_line;
-    std::cout << 1 << "\n";
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
-    std::cout << 2 << "\n";
     std::string command = cmd_str.substr(0, first_redirect_sign);
-    std::cout << 3 << "\n";
     std::string output_file = cmd_str.substr(last_redirect_sign + 1);
-    std::cout << 4 << "\n";
-    std::ofstream ofile;
-    std::cout << 5 << "\n";
+    //std::ofstream ofile(output_file, fstream::app);
     if (first_redirect_sign != last_redirect_sign) {
-        ofile.open(output_file, fstream::app);
+        std::ofstream ofile(output_file, fstream::app);
     }
     else {
-        ofile.open(output_file);
-    }
-    std::cout << 6 << "\n";
-    std::streambuf* oldbuf = std::cout.rdbuf();
+        std::ofstream ofile(output_file);
+    std::streambuf *oldbuf = std::cout.rdbuf();
     std::cout.rdbuf(ofile.rdbuf());
+    std::cout << 1 << "\n";
     const char* cmd_format = command.c_str();
+    std::cout << cmd_format << "\n";
     SmallShell::getInstance().executeCommand(cmd_format);
     std::cout.rdbuf(oldbuf);
-}
+    std::cout << cmd_format << "\n";
+   }
 
 int BuiltInCommand::getLen(char** args){
 	int count = 0;
