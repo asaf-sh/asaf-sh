@@ -688,9 +688,8 @@ void RedirectionCommand::execute() {
         std::ofstream ofile(output_file, std::ios_base::app);
     }
     else {
-        std::cout << output_file << "\n";
-    }
         std::ofstream ofile(output_file);
+    }
         std::streambuf* oldbuf = std::cout.rdbuf();
         std::cout.rdbuf(ofile.rdbuf());
         const char* cmd_format = command.c_str();
