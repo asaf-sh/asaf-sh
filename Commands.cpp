@@ -683,7 +683,6 @@ void RedirectionCommand::execute() {
     int start_of_file_idx = cmd_str.find_last_of(WHITESPACE);
     std::string command = cmd_str.substr(0, first_redirect_sign);
     std::string output_file = cmd_str.substr(start_of_file_idx + 1);
-    std::ofstream ofile;
     std::streambuf* oldbuf = std::cout.rdbuf();
     if (first_redirect_sign != last_redirect_sign) {
         std::cout << "append" << "\n";
