@@ -675,12 +675,14 @@ void PipeCommand::execute(){
 }
 
 void RedirectionCommand::execute() {
-    int first_redirect_sign = cmd_line.find_first_of(">");
-    int last_redirect_sign = cmd_line.find_last_of(">");
-    std::string cmd_line = cmd_line;
-    std::string command = cmd_line.substr(0, first_redirect_sign);
-    std::string output_file = cmd_line.substr(0, last_redirect_sign + 1);
-    if (first_redirect_sign != last_redirect_sign)) {
+    char* cmd_ptr;
+    strcpy(cmd_ptr, cmd_line);
+    std::string cmd_str = cmd_str;
+    int first_redirect_sign = cmd_str.find_first_of(">");
+    int last_redirect_sign = cmd_str.find_last_of(">");
+    std::string command = cmd_str.substr(0, first_redirect_sign);
+    std::string output_file = cmd_str.substr(0, last_redirect_sign + 1);
+    if (first_redirect_sign != last_redirect_sign) {
         freopen(output_file, "a", stdout);
     }
     else {
