@@ -677,7 +677,7 @@ void PipeCommand::execute(){
 void RedirectionCommand::execute() {
     char* cmd_ptr;
     strcpy(cmd_ptr, cmd_line);
-    std::string cmd_str = cmd_str;
+    std::string cmd_str = cmd_ptr;
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
     std::string command = cmd_str.substr(0, first_redirect_sign);
@@ -696,7 +696,6 @@ void RedirectionCommand::execute() {
     strcpy(cmd_format, command.c_str());
     SmallShell::getInstance().executeCommand(cmd_format);
     std::cout.rdbuf(oldbuf);
-    //freopen(std::cout, "w", output_file);
 }
 
 int BuiltInCommand::getLen(char** args){
