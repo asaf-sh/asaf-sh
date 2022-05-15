@@ -686,12 +686,13 @@ void RedirectionCommand::execute() {
     std::ofstream ofile;
     if (first_redirect_sign != last_redirect_sign) {
         std::ofstream ofile(output_file, std::ios_base::app);
+        std::cout.rdbuf(ofile.rdbuf());
     }
     else {
         std::ofstream ofile(output_file);
+        std::cout.rdbuf(ofile.rdbuf());
     }
         std::streambuf* oldbuf = std::cout.rdbuf();
-        std::cout.rdbuf(ofile.rdbuf());
         const char* cmd_format = command.c_str();
         SmallShell::getInstance().executeCommand(cmd_format);
         std::cout.rdbuf(oldbuf);
