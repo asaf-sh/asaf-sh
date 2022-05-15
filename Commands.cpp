@@ -688,11 +688,15 @@ void RedirectionCommand::execute() {
         std::cout << "append" << "\n";
         std::ofstream ofile(output_file, std::ios_base::app);
         std::cout.rdbuf(ofile.rdbuf());
+        const char* cmd_format = command.c_str();
+        SmallShell::getInstance().executeCommand(cmd_format);
     }
     else {
         std::cout << "write" << "\n";
         std::ofstream ofile(output_file);
         std::cout.rdbuf(ofile.rdbuf());
+        const char* cmd_format = command.c_str();
+        SmallShell::getInstance().executeCommand(cmd_format);
     }
         const char* cmd_format = command.c_str();
         SmallShell::getInstance().executeCommand(cmd_format);
