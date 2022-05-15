@@ -642,6 +642,9 @@ void PipeCommand::setReadSide(int p[2]){
 }
 
 void PipeCommand::execute(){
+	cout << "in PipeComand ! with"\
+		<< "C1=" << cmd_write->getCommandLine()\
+		<< " and C2=" << cmd_read->getCommandLine() << endl;
   int p[2];
   if(pipe(p) == -1){
     perror("smash error: pipe failed");
@@ -661,7 +664,8 @@ void PipeCommand::execute(){
       wait(NULL);
       break;
   }
-};
+  cout << "finised execution" << endl;
+}
 
 void RedirectionCommand::execute(){};
 
@@ -707,13 +711,18 @@ ChangeDirCommand::ChangeDirCommand(const char* cmd_line) : BuiltInCommand(cmd_li
 };
 
 PipeCommand::PipeCommand(const char* cmd_line) : Command(cmd_line){
+  cout << "in Pipe Ctor with cmd: " << cmd_line << endl;
   string cmd_str = string(cmd_line);
   int sep = cmd_str.find('|');
-  bool is_err_pipe = cmd_str.find("|&") != string::npos;
+  bool is_err_pipe = (cmd_str.find("|&") != string::npos);
   write_channel = (is_err_pipe ? 2 : 1);
+
+  strcpy(cmd_w, cmd_str.substr(0,sep).c_str());
+  strcpy(cmd_r, cmd_str.substr(sep+write_channel).c_str());
+
   bool to_be_ignored;  //just for CreateCommand signature
-  cmd_write = SmallShell::getInstance().CreateCommand(cmd_str.substr(0,sep).c_str(), &to_be_ignored);
-  cmd_read = SmallShell::getInstance().CreateCommand(cmd_str.substr(sep+is_err_pipe).c_str(), &to_be_ignored);
+  cmd_write = SmallShell::getInstance().CreateCommand(cmd_w, &to_be_ignored);
+  cmd_read = SmallShell::getInstance().CreateCommand(cmd_r, &to_be_ignored);
   }
 RedirectionCommand::RedirectionCommand(const char* cmd_line) : Command(cmd_line){};
 

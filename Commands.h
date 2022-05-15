@@ -76,7 +76,9 @@ private:
 
 class PipeCommand : public Command {
  private:
+ char cmd_r[COMMAND_MAX_LENGTH];
  Command* cmd_read;
+ char cmd_w[COMMAND_MAX_LENGTH];
  Command* cmd_write;
  int write_channel;
  int separatePipe();
