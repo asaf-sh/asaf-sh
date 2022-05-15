@@ -575,8 +575,10 @@ void TailCommand::execute() {
     }
     file.close();
     for (auto itr = rows_q.begin(); itr != rows_q.end(); ++itr) {
-        std::cout << *itr << "\n";
-    }
+        if (*itr){
+            std::cout << *itr << "\n";
+        }
+        }
 }
 
 void TouchCommand::execute(){
@@ -768,13 +770,6 @@ PipeCommand::~PipeCommand(){
   delete cmd_write;
   delete cmd_read;
 };
-//JobsList::JobEntry::~JobEntry(){};
-/*void QuitCommand::execute(){}
-
-void TailCommand::execute(){}
-
-void TouchCommand::execute(){}
-*/
 
 
 void SmallShell::executeCommand(const char *cmd_line) {
