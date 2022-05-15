@@ -674,7 +674,50 @@ void PipeCommand::execute(){
   }
 }
 
-void RedirectionCommand::execute(){};
+bool RedirectionCommand::validateArgs()
+{
+    std::string cmd_str = cmd_line;
+    int first_redirect_sign = cmd_str.find_first_of(">");
+    int last_redirect_sign = cmd_str.find_last_of(">");
+    if (last_redirect_sign - first_redirect_sign != 1 && last_redirect_sign != first_redirect_sign)
+    {
+        return false;
+    }
+    return true;
+}
+
+void RedirectionCommand::execute()
+{
+    if (!validateArgs()) {
+        std::cerr << "smash error: redirection: invalid arguments \n";
+        return;
+    }
+    std::string cmd_str = cmd_line;
+
+    int first_redirect_sign = cmd_str.find_first_of(">");
+    int last_redirect_sign = cmd_str.find_last_of(">");
+    int start_of_file_idx = cmd_str.find_last_of(WHITESPACE);
+
+    std::string command = cmd_str.substr(0, first_redirect_sign);
+    std::string output_file = cmd_str.substr(start_of_file_idx + 1);
+    std::streambuf* oldbuf = std::cout.rdbuf();
+
+    if (first_redirect_sign != last_redirect_sign)
+    {
+        std::ofstream ofile(output_file, std::ios_base::app);
+        std::cout.rdbuf(ofile.rdbuf());
+        const char* cmd_format = command.c_str();
+        SmallShell::getInstance().executeCommand(cmd_format);
+    }
+    else
+    {
+        std::ofstream ofile(output_file);
+        std::cout.rdbuf(ofile.rdbuf());
+        const char* cmd_format = command.c_str();
+        SmallShell::getInstance().executeCommand(cmd_format);
+    }
+    std::cout.rdbuf(oldbuf);
+}
 
 /*char** BuiltInCommand::parseLine(const char* cmd_line){
   _parseCommandLine(cmd_line, args);
