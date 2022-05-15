@@ -675,37 +675,28 @@ void PipeCommand::execute(){
 }
 
 void RedirectionCommand::execute() {
-    //char* cmd_ptr;
-    //strcpy(cmd_ptr, cmd_line);
     std::string cmd_str = cmd_line;
+
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
     int start_of_file_idx = cmd_str.find_last_of(WHITESPACE);
+
     std::string command = cmd_str.substr(0, first_redirect_sign);
     std::string output_file = cmd_str.substr(start_of_file_idx + 1);
     std::streambuf* oldbuf = std::cout.rdbuf();
+
     if (first_redirect_sign != last_redirect_sign) {
-        std::cout << "append" << "\n";
         std::ofstream ofile(output_file, std::ios_base::app);
         std::cout.rdbuf(ofile.rdbuf());
         const char* cmd_format = command.c_str();
         SmallShell::getInstance().executeCommand(cmd_format);
     }
     else {
-        std::cout << "write" << "\n";
         std::ofstream ofile(output_file);
         std::cout.rdbuf(ofile.rdbuf());
         const char* cmd_format = command.c_str();
         SmallShell::getInstance().executeCommand(cmd_format);
     }
-        std::ofstream ofile(output_file);
-        std::cout.rdbuf(ofile.rdbuf());
-        const char* cmd_format = command.c_str();
-        SmallShell::getInstance().executeCommand(cmd_format);
-    }
-        const char* cmd_format = command.c_str();
-        SmallShell::getInstance().executeCommand(cmd_format);
-        std::cout << "here" << "\n";
         std::cout.rdbuf(oldbuf);
 }
 
