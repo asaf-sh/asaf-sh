@@ -98,7 +98,8 @@ static void badKill(){
 
 static bool isNumber(const string& str)
 {
-    return str.find_first_not_of("0123456789") == string::npos;
+    std::string number = str.substr(1);
+    return number.find_first_not_of("0123456789") == string::npos;
 }
 
 Command::Command(const char* cmd_line) : cmd_line(cmd_line){
