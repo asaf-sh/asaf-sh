@@ -694,6 +694,7 @@ void RedirectionCommand::execute() {
     }
     else {
         std::ofstream ofile(output_file);
+        std::cout.rdbuf(ofile.rdbuf());
     }
         std::ofstream ofile(output_file);
         std::cout.rdbuf(ofile.rdbuf());
