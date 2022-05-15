@@ -64,7 +64,7 @@ int _parseCommandLine(const char* cmd_line, char** args) {
 }
 
 
-bool _isBackgroundComamnd(const char* cmd_line) {
+bool _isBackgroundCommand(const char* cmd_line) {
   const string str(cmd_line);
   return str[str.find_last_not_of(WHITESPACE)] == '&';
 }
@@ -120,14 +120,14 @@ void GetCurrDirCommand::execute(){
 }*/
 
 bool JobsList::JobEntry::stop(){
-  if(status != Status::running){
+  /*if(status != Status::running){
+    return false;
+  }*/
+  if(kill(pid, SIGSTOP) < 0){
+    badKill();
     return false;
   }
-  else if(kill(pid, SIGTSTP) < 0){
-    badKill();
-  }
   else{
-    status = Status::stopped;
     //resetStartTime(); - consider setting here instead of in "cont" (based on instruction in WHW1
     return true;
   }
@@ -139,6 +139,7 @@ bool JobsList::JobEntry::cont(){
   }
   else if (kill(pid, SIGCONT) != 0){
     badKill();
+    return false;
   }
   else{
     status = Status::running;
@@ -187,8 +188,8 @@ void JobsList::killAllJobs(bool loud){
 }
 
 void JobsList::JobEntry::killJob(bool loud){
-	if(kill(pid, SIGKILL) != 0 && loud){
-    badKill()
+  if(kill(pid, SIGKILL) != 0 && loud){
+    badKill();
   }
 }
 
@@ -366,7 +367,7 @@ void KillCommand::execute(){
         cout << "signal number " << req_sig << " was sent to pid " << job->getPid() << endl;
       }
       else{
-	badKill()
+	badKill();
       }
     }
   }
@@ -378,7 +379,8 @@ void BackgroundCommand::execute(){
   if (args_len == 1){
     job = JobsList::getInstance().getLastStoppedJob();
     if (job == nullptr){
-      cerr << "smash error: bg: there is no stopped jobs to resume" << endl;    
+      cerr << "smash error: bg: there is no stopped jobs to resume" << endl;
+      return;
     }
   }
   else if (args_len == 2 && isNumber(args[1])){
@@ -386,18 +388,20 @@ void BackgroundCommand::execute(){
     job =  JobsList::getInstance().getJobById(req_id);
     if (job == nullptr){
       cerr << "smash error: bg: job-id " << req_id << " does not exist" << endl;
+      return;
     }
     else if(job->getStatus() == Status::running){
       cerr << "smash error: bg: job-id " << req_id  << " is already running in the background" << endl;
-    }
-    else{
-      cout << job->jobStr(false) << endl;
-      job->cont();
+      return;
     }
   }
   else{
     cerr << "smash error: bg: invalid arguments" << endl;
+    return;
   }
+
+  cout << job->jobStr(false) << endl;
+  job->cont();
 }
 
 void ForegroundCommand::execute(){
@@ -764,7 +768,7 @@ void SmallShell::executeCommand(const char *cmd_line) {
   }
 }
 bool JobsList::JobEntry::isFg(){
-        return !_isBackgroundComamnd(cmd_line);
+        return !_isBackgroundCommand(cmd_line);
       }
 
 int JobsList::getMaxId(){
@@ -797,7 +801,7 @@ void JobsList::printJobsList(){
 }
 void JobsList::JobEntry::updateStatus(){
 	int wstatus;
-	if(waitpid(pid, &wstatus, WNOHANG) == 0){
+	if(waitpid(pid, &wstatus, WNOHANG | WUNTRACED) == 0){
 		return;
 	}
 	if(WIFEXITED(wstatus) || WIFSIGNALED(wstatus)){
@@ -833,14 +837,13 @@ void JobsList::JobEntry::jobWait(){
   JobsList::getInstance().setFg(job_id);
   status = Status::running;
   int wstatus;
-  waitpid(pid, &wstatus, 0);
+  waitpid(pid, &wstatus, WUNTRACED);
   JobsList::getInstance().resetFg(job_id);
   if(WIFEXITED(wstatus)){
-	  status = Status::finished;
-	}
-
-	else if (WIFSTOPPED(wstatus)){
-    stop();
+    status = Status::finished;
+  }
+  else if (WIFSTOPPED(wstatus)){
+    status = Status::stopped;
   }
   else{
     ;
@@ -871,7 +874,7 @@ void JobsList::JobEntry::start(Command* cmd){
     default: // in main process
     	//sleep(1);
     	//printf("in parent proccess after child started\n");
-      bool is_fg = !_isBackgroundComamnd(cmd_line);
+      bool is_fg = !_isBackgroundCommand(cmd_line);
       if(is_fg){
         jobWait();
 	//cout << *this << " is fg" << endl;
