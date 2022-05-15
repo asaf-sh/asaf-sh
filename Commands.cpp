@@ -693,7 +693,7 @@ void RedirectionCommand::execute() {
         SmallShell::getInstance().executeCommand(cmd_format);
     }
     else {
-        std::cout << output_file << "\n";
+        std::ofstream ofile(output_file);
     }
         std::ofstream ofile(output_file);
         std::cout.rdbuf(ofile.rdbuf());
