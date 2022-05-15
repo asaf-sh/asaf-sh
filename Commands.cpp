@@ -681,15 +681,26 @@ void RedirectionCommand::execute() {
     int first_redirect_sign = cmd_str.find_first_of(">");
     int last_redirect_sign = cmd_str.find_last_of(">");
     std::string command = cmd_str.substr(0, first_redirect_sign);
-    std::string output_file = cmd_str.substr(0, last_redirect_sign + 1);
+    std::string output_file = cmd_str.substr(last_redirect_sign + 1);
+
+    std::ofstream ofile;
+    (output_file, std::fstream::app);
+    std::streambuf* oldbuf = std::cout.rdbuf();
+
     if (first_redirect_sign != last_redirect_sign) {
-        freopen(output_file, "a", stdout);
+        //freopen(output_file, "a", stdout);
+        ofile.open(output_file, std::ios_base::app);
     }
     else {
-        freopen(output_file, "w", stdout);
+        ofile.open(output_file);
+        //freopen(output_file, "w", stdout);
     }
-    char* cmd_format = command.c_str;
+    std::cout.rdbuf(ofile.rdbuf());
+    std::streambuf* oldbuf = std::cout.rdbuf();
+    char* cmd_format;
+    strcpy(cmd_format, command.c_str());
     SmallShell::getInstance().executeCommand(cmd_format);
+    std::cout.rdbuf(oldbuf);
     //freopen(std::cout, "w", output_file);
 }
 
