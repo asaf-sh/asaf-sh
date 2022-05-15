@@ -685,7 +685,7 @@ void RedirectionCommand::execute() {
     std::string output_file = cmd_str.substr(start_of_file_idx + 1);
     //std::ofstream ofile(output_file, fstream::app);
     if (first_redirect_sign != last_redirect_sign) {
-        std::ofstream ofile(output_file, fstream::app);
+        std::ofstream ofile(output_file, std::ios_base::app);
     }
     else {
         std::cout << output_file << "\n";
