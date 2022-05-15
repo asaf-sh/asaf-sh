@@ -681,12 +681,12 @@ void RedirectionCommand::execute() {
     std::string command = cmd_line.substr(0, first_redirect_sign);
     std::string output_file = cmd_line.substr(0, last_redirect_sign + 1);
     if (first_redirect_sign != last_redirect_sign)) {
-        freopen(output_file, "a", std::stdout);
+        freopen(output_file, "a", stdout);
     }
     else {
-        freopen(output_file, "w", std::stdout);
+        freopen(output_file, "w", stdout);
     }
-    const char* cmd_format = command.c_str;
+    char* cmd_format = command.c_str;
     SmallShell::getInstance().executeCommand(cmd_format);
     //freopen(std::cout, "w", output_file);
 }
