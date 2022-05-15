@@ -697,7 +697,7 @@ void RedirectionCommand::execute() {
     std::cout << 6 << "\n";
     std::streambuf* oldbuf = std::cout.rdbuf();
     std::cout.rdbuf(ofile.rdbuf());
-    char* cmd_format = command.c_str();
+    const char* cmd_format = command.c_str();
     SmallShell::getInstance().executeCommand(cmd_format);
     std::cout.rdbuf(oldbuf);
 }
