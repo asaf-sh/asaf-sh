@@ -649,8 +649,29 @@ void PipeCommand::execute(){
   if(pipe(p) == -1){
     perror("smash error: pipe failed");
   }
-  pid_t cp = fork();
-  switch(cp){
+  
+  pid_t write_p = fork();
+  pid_t read_p = fork();
+  if(write_p == -1 || read_p == -1){
+    badFork();
+  }
+  else{
+    if(write_p == 0){
+      setWriteSide(p);
+      cmd_write->execute();
+      exit(0);
+    }
+    if(read_p == 0){
+      setReadSide(p);
+      cmd_read->execute();
+      exit(0);
+    }
+    closePipe(p);
+    wait(NULL);
+    wait(NULL);
+  }
+/*
+  }
     case -1:
       badFork();
       break;
@@ -659,11 +680,13 @@ void PipeCommand::execute(){
       cmd_write->execute();
       break;
     default:
+      
       setReadSide(p);
       cmd_read->execute();
       wait(NULL);
       break;
-  }
+  }*/
+
   cout << "finised execution" << endl;
 }
 
